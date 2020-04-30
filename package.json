@@ -1,0 +1,15 @@
+{
+  "name": "websockets",
+  "version": "0.0.1",
+  "description": "A simple JavaScript class to handle browser-side Websockets",
+	"main": "index.js",
+	"scripts": {
+		"start": "nodemon index.js"
+	},
+  "author": "Cyprien GLEPIN <betaweb34@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^2.0.3",
+    "ws": "^7.2.5"
+  }
+}
