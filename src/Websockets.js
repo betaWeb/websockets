@@ -462,3 +462,7 @@ class Websockets {
 	}
 
 }
+
+if (!('Websockets' in window)) {
+	window['Websockets'] = Websockets
+}
