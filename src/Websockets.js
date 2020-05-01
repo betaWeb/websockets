@@ -3,36 +3,30 @@
  */
 class Websockets {
 	/**
-	 * @type {String}
-	 * 
-	 * @public
-	 */
-	endpoint = '';
-
-	/**
 	 * @type {Object}
 	 * 
 	 * @public
 	 * */
-	options = {};
+	options = {}
 
 	/**
 	 * @type {WebSocket}
 	 *
 	 * @public
 	 */
-	client = null;
+	client = null
 
 	/**
 	 * @type {Object}
 	 * 
 	 * @private
 	 */
-	_events = {};
+	_events = {}
 
 	/**
+	 * @property {String} [endpoint='']
 	 * @property {String} [namespace='']
-	 * @property {String} [sheme='auto'] 'ws', 'wss', 'auto'
+	 * @property {String} [scheme='auto'] 'ws', 'wss', 'auto'
 	 * @property {String} base_url default: window.location.hostname
 	 * @property {String|String[]} [protocols='']
 	 * @property {Boolean} [debug=false]
@@ -43,18 +37,20 @@ class Websockets {
 	 */
 	static get DEFAULT_OPTIONS() {
 		return {
+			endpoint: '',
 			namespace: '',
-			sheme: 'auto',
+			scheme: 'auto',
 			base_url: window.location.hostname,
 			port: null,
 			protocols: [],
 			debug: false,
 			onerror: () => {
-				throw new Error('[Err] Websockets - unhandled error');
+				throw new Error('[Err] Websockets - unhandled error')
 			},
 			onclose: () => {},
-			onopen: () => {}
-		};
+			onopen: () => {},
+			onprogress: null
+		}
 	}
 
 	/**
@@ -96,12 +92,12 @@ class Websockets {
 	 *
 	 * @public
 	 */
-	get sheme() {
-		if (this.options.sheme !== 'auto') {
-			return this.options.sheme; 
+	get scheme() {
+		if (this.options.scheme !== 'auto') {
+			return this.options.scheme
 		}
 
-		return window.location.protocol === "https" ? "wss" : "ws";
+		return window.location.protocol === "https" ? "wss" : "ws"
 	}
 
 	/**
@@ -112,13 +108,19 @@ class Websockets {
 	get url() {
 		let baseUrl = /^(wss?:)?\/\//.test(this.options.base_url) 
 			? this.options.base_url 
-			: `${this.sheme}://${this.options.base_url.replace(/^(https?:)?\/\//, '')}`;
+			: `${this.scheme}://${this.options.base_url.replace(/^(https?:)?\/\//, '')}`
 
 		if (this.options.port !== null && !baseUrl.endsWith(this.options.port)) {
 			baseUrl += `:${this.options.port.toString()}`
 		}
 
-		return `${baseUrl.replace(/\/$/, '')}/${this.endpoint}`;
+		baseUrl = baseUrl.replace(/\/$/, '');
+
+		if (this.options.endpoint !== '') {
+			return `${baseUrl}/${this.options.endpoint}`
+		}
+
+		return baseUrl
 	}
 
 	/**
@@ -127,7 +129,7 @@ class Websockets {
 	 * @public
 	 */
 	get isInitialized() {
-		return this.client !== null;
+		return this.client !== null
 	}
 
 	/**
@@ -139,7 +141,7 @@ class Websockets {
 		return (
 			this.isInitialized && 
 			this.client.readyState === WebSocket.CONNECTING
-		);
+		)
 	}
 
 	/**
@@ -151,7 +153,7 @@ class Websockets {
 		return (
 			this.isInitialized && 
 			this.client.readyState === WebSocket.OPEN
-		);
+		)
 	}
 
 	/**
@@ -163,7 +165,7 @@ class Websockets {
 		return (
 			this.isInitialized && 
 			this.client.bufferedAmount > 0
-		);
+		)
 	}
 
 	/**
@@ -175,7 +177,7 @@ class Websockets {
 		return this.isInitialized && (
 			this.client.readyState === WebSocket.CLOSING ||
 			this.client.readyState === WebSocket.CLOSED
-		);
+		)
 	}
 
 	/**
@@ -184,83 +186,82 @@ class Websockets {
 	 * @public
 	 */
 	get events() {
-		return this._events;
+		return this._events
 	}
 
 	/**
 	 * @constructor
 	 * 
-	 * @param {String|Object} [endpoint=''] 
 	 * @param {Object} [options={}]
+	 *
+	 * @throws
 	 */
-	constructor(endpoint = '', options = {}) {
-		if (typeof endpoint === 'object') {
-			options = endpoint
-			this.endpoint = ''
-		} else {
-			this.endpoint = endpoint;
-		}
-
+	constructor(options = {}) {
 		this.options = {
 			...Websockets.DEFAULT_OPTIONS,
 			...options
-		};
+		}
 
-		if (window.location.protocol === 'http:' && this.options.sheme === 'wss') {
-			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.");
-		} else if (window.location.protocol === 'https:' && this.options.sheme === 'ws') {
-			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.");
+		if (window.location.protocol === 'http:' && this.options.scheme === 'wss') {
+			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.")
+		} else if (window.location.protocol === 'https:' && this.options.scheme === 'ws') {
+			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.")
 		}
 	}
 
 	/**
-	 * @returns {void}
+	 * @returns {Promise}
 	 *
 	 * @public
 	 */
 	connect() {
-		try {
-			this.client = new WebSocket(
-				this.url,
-				this.options.protocols
-			);
+		return new Promise((resolve, reject) => {
+			try {
+				this.client = new WebSocket(
+					this.url,
+					this.options.protocols
+				)
 
-			this.client.onerror = event => {
-				this.options.onerror(event);
-			};
+				this.client.onerror = event => {
+					this.options.onerror(event)
+					reject()
+				}
 
-			this.client.onopen = event => {
-				if (!this.isOpen) return;
+				this.client.onopen = event => {
+					if (!this.isOpen) return
 
-				this._messagesHandler();
-				this.emit(Websockets.DEFAULT_EVENTS.CONNECTED);
+					this._messagesHandler()
+					this.emit(Websockets.DEFAULT_EVENTS.CONNECTED)
 
-				this.options.onopen(event);
+					this.options.onopen(event)
 
-				this.client.onclose = event => {
-					const reason = Websockets.CLOSE_CODES[event.code]
-						? Websockets.CLOSE_CODES[event.code]
-						: 'Unknown Reason';
+					this.client.onclose = event => {
+						const reason = Websockets.CLOSE_CODES[event.code]
+							? Websockets.CLOSE_CODES[event.code]
+							: 'Unknown Reason'
 
-					this.options.onclose(event, reason);
-				};
-			};
-		} catch (e) {
-			throw new Error('[Err] Websockets.connect - error on socket connexion \n' + e);
-		}
+						this.options.onclose(event, reason)
+					}
+
+					resolve()
+				}
+			} catch (e) {
+				reject(e)
+			}
+		})
 	}
 
 	/**
 	 * @param {*|Object|String|ArrayBuffer|Blob} [data='']
+	 * @param {Function} progressCallback
 	 *
-	 * @returns {Websockets}
+	 * @returns {Promise}
+	 * @throws
 	 *
 	 * @public
-	 * @fluent
 	 */
 	send(data = '') {
-		this._checkConnection();
-		if (this.isClosed) return;
+		this._checkConnection()
 
 		try {
 			if (
@@ -268,17 +269,38 @@ class Websockets {
 				!(data instanceof ArrayBuffer) && 
 				!(data instanceof Blob)
 			) {
-				data = JSON.stringify(data);
+				try {
+					data = JSON.stringify(data)
+				} catch {}
 			}
 
-			this.client.send(data);
+			return new Promise((resolve, reject) => {
+				try {
 
-			this._debug(`Message sended.\npayload : ${JSON.stringify(data)}`, 'send');
+					this.client.send(data)
+
+					this._debug(`Message sended.\npayload : ${data}`, 'send')
+
+					if (this.options.onprogress !== null) {
+						const interval = setInterval(() => {
+							if (this.client.bufferedAmount > 0) {
+								this.options.onprogress(this.client.bufferedAmount, data)
+							} else {
+								this.options.onprogress(0, data)
+								clearInterval(interval);
+								resolve()
+							}
+						}, 100);
+					} else {
+						resolve()
+					}
+				} catch (e) {
+					reject(e)
+				}
+			})
 		} catch (e) {
-			throw new Error(`[Err] Websockets.send - ${e.message}`);
+			throw new Error(`[Err] Websockets.send - ${e.message}`)
 		}
-
-		return this;
 	}
 
 	/**
@@ -286,27 +308,26 @@ class Websockets {
 	 * @param {*} payload
 	 * @param {Boolean} namespaced
 	 *
-	 * @returns {Promise}
+	 * @returns {Websockets}
+	 * @throws
 	 *
 	 * @public
 	 */
-	emit(type, payload = {}, namespaced = true) {
-		this._checkConnection();
+	emit(type, payload = '', namespaced = true) {
+		this._checkConnection()
 
 		if (namespaced === true)
-			type = this._namespacedType(type);
+			type = this._namespacedType(type)
 
-		return new Promise((resolve, reject) => {
-			try {
-				this.send({ type, payload });
+		try {
+			this.send({ type, payload })
 
-				this._debug(`Event '${type}' emitted.`, 'emit');
+			this._debug(`Event '${type}' emitted.`, 'emit')
+		} catch (e) {
+			throw new Error(e)
+		}
 
-				this.onProgess(finished => finished && resolve(type));
-			} catch (e) {
-				reject(e);
-			}
-		})
+		return this
 	}
 
 	/**
@@ -315,47 +336,66 @@ class Websockets {
 	 * @param {Boolean} namespaced
 	 *
 	 * @returns {Websockets}
+	 * @throws
 	 *
 	 * @public
 	 * @fluent
 	 */
 	on(type, callback, namespaced = true) {
-		this._checkConnection();
+		this._checkConnection()
 
 		if (namespaced === true)
-			type = this._namespacedType(type);
+			type = this._namespacedType(type)
 
 		if (!this._events[type]) {
-			this._events[type] = [];
+			this._events[type] = []
 		}
 
-		this._events[type].push(callback);
+		this._events[type].push(callback)
 
-		this._debug(`Event '${type}' added successfully`, 'on');
+		this._debug(`Event '${type}' successfully added`, 'on')
 
-		return this;
+		return this
 	}
 
 	/**
-	 * @param {Function} callback
+	 * @param {String} type
+	 * @param {Function|null} [callback=null]
+	 * @param {Boolean} namespaced
 	 *
 	 * @returns {Websockets}
+	 * @throws
 	 *
 	 * @public
 	 * @fluent
 	 */
-	onProgess(callback) {
-		const interval = window.setInterval(() => {
-			const finished = this.client.bufferedAmount === 0;
+	off(type, callback = null, namespaced = true) {
+		this._checkConnection()
 
-			callback(finished, this.client.bufferedAmount);
+		if (namespaced === true)
+			type = this._namespacedType(type)
 
-			if (finished) {
-				clearInterval(interval);
+		if (!this._events[type]) {
+			throw new Error('')
+		}
+
+		if (callback !== null) {
+			this._events[type] = this._events[type].filter(cb =>
+				// compare functions equality
+				cb.toString().replace(/\s+/g, '') !== callback.toString().replace(/\s+/g, '')
+			)
+
+			if (this._events[type].length === 0) {
+				this.off(type, null, namespaced);
 			}
-		}, 100);
 
-		return this;
+			this._debug(`Event '${type}' callback successfully removed`, 'off')
+		} else {
+			delete this._events[type]
+			this._debug(`Event '${type}' successfully removed`, 'off')
+		}
+
+		return this
 	}
 
 	/**
@@ -367,25 +407,30 @@ class Websockets {
 		return this.on(
 			Websockets.DEFAULT_EVENTS.MESSAGE, 
 			callback
-		); 
+		) 
 	}
 
 	/**
 	 * @returns {void}
+	 * @throws
 	 *
 	 * @public
 	 */
 	disconnect() {
-		this._checkConnection();
+		this._checkConnection()
 
 		if (this.isSending) {
-			window.setTimeout(() => this.disconnect(), 500);
+			window.setTimeout(() => this.disconnect(), 500)
 		} else {
-			this.client.close();
-			this._debug('Websockets successfully disconnected', 'disconnect');
+			this.client.close()
+			this._debug('Websockets successfully disconnected', 'disconnect')
 		}
 	}
 
+	/**
+	 * @throws
+	 * @private
+	 */
 	_checkConnection() {
 		if (this.isClosed) {
 			throw new Error('[Err] Websockets._checkConnection - connection closed.')
@@ -399,22 +444,22 @@ class Websockets {
 	 */
 	_messagesHandler() {
 		this.client.onmessage = event => {
-			let data;
+			let data
 			try {
-				data = JSON.parse(event.data);
+				data = JSON.parse(event.data)
 			} catch (e) {
-				data = event.data;
+				data = event.data
 			}
 
-			this._dispatchEvents(
+			this._dispatch(
 				Websockets.DEFAULT_EVENTS.MESSAGE,
 				data
-			);
+			)
 
 			if (data.type !== undefined) {
-				this._dispatchEvents(data.type, data);
+				this._dispatch(data.type, data)
 			}
-		};
+		}
 	}
 
 	/**
@@ -426,10 +471,10 @@ class Websockets {
 	 * 
 	 * @private
 	 */
-	_dispatchEvents(type, data) {
+	_dispatch(type, data) {
 		if (this._events[type]) {
-			this._debug(`'${type}' dispatched`, '_dispatchEvents');
-			this._events[type].forEach(cb => cb(data));
+			this._debug(`'${type}' dispatched`, '_dispatch')
+			this._events[type].forEach(cb => cb(data))
 		}
 	}
 
@@ -442,10 +487,10 @@ class Websockets {
 	 */
 	_namespacedType(type) {
 		if (this.options.namespace !== '' && !type.startsWith(this.options.namespace)) {
-			return `${this.options.namespace}_${type}`;
+			return `${this.options.namespace}_${type}`
 		}
 
-		return type;
+		return type
 	}
 
 	/**
@@ -456,13 +501,24 @@ class Websockets {
 	 */
 	_debug(message, context = null) {
 		if (this.options.debug === true) {
-			context = context !== null ? `.${context}` : '';
-			console.info(`[DEBUG] Websockets${context} - ${message}`);
+			context = context !== null ? `.${context}` : ''
+			console.info(`[DEBUG] Websockets${context} - ${message}`)
 		}
 	}
 
 }
 
-if (!('Websockets' in window)) {
-	window['Websockets'] = Websockets
+// Server side
+if (typeof module !== 'undefined' &&
+	typeof module.exports !== 'undefined' &&
+	typeof global !== 'undefined'
+) {
+	module.exports = Websockets
+}
+
+// Browser side
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+	if (!('Websockets' in window)) {
+		window['Websockets'] = Websockets
+	}
 }

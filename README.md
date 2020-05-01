@@ -13,7 +13,7 @@ And declare a new instance in your script :
 ```javascript
 const client = new Websockets({
     port: 9000,
-    sheme: 'ws'
+    scheme: 'ws'
 })
 
 client.connect()

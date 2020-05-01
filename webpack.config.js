@@ -2,17 +2,11 @@ const path = require('path')
 const buildPath = path.resolve(__dirname, "./dist")
 const isDev = process.env.ENV === 'development'
 
-module.exports = {
-    mode: process.env.ENV || 'production',
-    target: "web",
+const baseConfig = {
     entry: [
         // '@babel/polyfill',
         "./src/Websockets.js"
     ],
-    output: {
-        path: buildPath,
-        filename: `Websockets.min.js`,
-    },
     devtool: isDev ? 'inline-source-map' : false,
     module: {
         rules: [
@@ -24,3 +18,29 @@ module.exports = {
         ]
     }
 }
+
+const serverConfig = {
+    mode: 'development',
+    target: 'node',
+    output: {
+        path: buildPath,
+        library: 'Websockets',
+        libraryTarget: 'umd',
+        filename: `Websockets.node.js`,
+        umdNamedDefine: true,
+        globalObject: `(typeof self !== 'undefined' ? self : this)`
+    },
+    ...baseConfig
+}
+
+const clientConfig = {
+    mode: process.env.ENV || 'production',
+    target: 'web',
+    output: {
+        path: buildPath,
+        filename: `Websockets.min.js`
+    },
+    ...baseConfig
+}
+
+module.exports = [ serverConfig, clientConfig ]

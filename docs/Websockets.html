@@ -78,7 +78,7 @@
             
                 <li class="parent " data-name="Websockets#options"><a href="Websockets.html#options">options</a></li>
             
-                <li class="parent " data-name="Websockets#sheme"><a href="Websockets.html#sheme">sheme</a></li>
+                <li class="parent " data-name="Websockets#scheme"><a href="Websockets.html#scheme">scheme</a></li>
             
                 <li class="parent " data-name="Websockets#url"><a href="Websockets.html#url">url</a></li>
             
@@ -98,7 +98,7 @@
             
                 <li class="parent  " data-name="Websockets#_debug"><a href="Websockets.html#_debug">_debug</a></li>
             
-                <li class="parent  " data-name="Websockets#_dispatchEvents"><a href="Websockets.html#_dispatchEvents">_dispatchEvents</a></li>
+                <li class="parent  " data-name="Websockets#_dispatch"><a href="Websockets.html#_dispatch">_dispatch</a></li>
             
                 <li class="parent  " data-name="Websockets#_messagesHandler"><a href="Websockets.html#_messagesHandler">_messagesHandler</a></li>
             
@@ -110,11 +110,13 @@
             
                 <li class="parent  " data-name="Websockets#emit"><a href="Websockets.html#emit">emit</a></li>
             
+                <li class="parent  " data-name="Websockets#off"><a href="Websockets.html#off">off</a></li>
+            
                 <li class="parent  " data-name="Websockets#on"><a href="Websockets.html#on">on</a></li>
             
                 <li class="parent  " data-name="Websockets#onMessage"><a href="Websockets.html#onMessage">onMessage</a></li>
             
-                <li class="parent  " data-name="Websockets#onProgess"><a href="Websockets.html#onProgess">onProgess</a></li>
+                <li class="parent  " data-name="Websockets#onProgress"><a href="Websockets.html#onProgress">onProgress</a></li>
             
                 <li class="parent  " data-name="Websockets#send"><a href="Websockets.html#send">send</a></li>
             
@@ -521,7 +523,7 @@
 	
         <tr>
             
-                <td class="name"><code>sheme</code></td>
+                <td class="name"><code>scheme</code></td>
             
             
             <td class="type">
@@ -1302,9 +1304,9 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="sheme">
-            <a class="share-icon" href="#sheme"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">sheme</span>
+        <h4 class="name" id="scheme">
+            <a class="share-icon" href="#scheme"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">scheme</span>
             
             
             
@@ -1553,10 +1555,10 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="_dispatchEvents">
-            <a class="share-icon" href="#_dispatchEvents"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="_dispatch">
+            <a class="share-icon" href="#_dispatch"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                _dispatchEvents
+                _dispatch
             </span>
             <span class="signature">(type, data)</span><span class="type-signature">void</span>
             
@@ -2355,6 +2357,232 @@
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="off">
+            <a class="share-icon" href="#off"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                off
+            </span>
+            <span class="signature">(type, <span class="optional">callback</span>, namespaced)</span><span class="type-signature"><a href="Websockets.html">Websockets</a></span>
+            
+            
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		<th>Default</th>
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>type</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>callback</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">function</span>
+|
+
+<span class="param-type">null</span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                    null
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                        <span class="optional">optional</span>
+                    
+                    
+                        
+                    
+                
+                </td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>namespaced</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Boolean</span>
+
+
+            
+            </td>
+            
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+            
+            <td class="description last">
+                
+                    
+                    
+                        
+                    
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        <a href="Websockets.html">Websockets</a>
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="on">
             <a class="share-icon" href="#on"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
@@ -2672,10 +2900,10 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="onProgess">
-            <a class="share-icon" href="#onProgess"><span class="glyphicon glyphicon-link"></span></a>
+        <h4 class="name" id="onProgress">
+            <a class="share-icon" href="#onProgress"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
-                onProgess
+                onProgress
             </span>
             <span class="signature">(callback)</span><span class="type-signature"><a href="Websockets.html">Websockets</a></span>
             
@@ -2999,7 +3227,7 @@
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Thu Apr 30 2020 19:36:37 GMT+0200 (GMT+02:00)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Fri May 01 2020 16:48:10 GMT+0200 (GMT+02:00)
             </div>
         </footer>
     </div>
