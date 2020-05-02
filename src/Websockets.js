@@ -210,7 +210,7 @@ class Websockets {
 	 * 
 	 * @param {Object} [options={}]
 	 *
-	 * @throws
+	 * @throws {Error}
 	 */
 	constructor(options = {}) {
 		if (!this.hasSupport) {
@@ -272,7 +272,7 @@ class Websockets {
 	 * @param {*|Object|String|ArrayBuffer|Blob} [data='']
 	 *
 	 * @returns {Promise}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 */
@@ -311,7 +311,7 @@ class Websockets {
 	 * @param {Boolean} namespaced
 	 *
 	 * @returns {Promise}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 */
@@ -338,7 +338,7 @@ class Websockets {
 	 * @param {Boolean} namespaced
 	 *
 	 * @returns {Websockets}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 * @fluent
@@ -364,7 +364,7 @@ class Websockets {
 	 * @param {Boolean} namespaced
 	 *
 	 * @returns {Websockets}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 * @fluent
@@ -412,7 +412,7 @@ class Websockets {
 
 	/**
 	 * @returns {void}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 */
@@ -429,7 +429,7 @@ class Websockets {
 
 	/**
 	 * @returns {void}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @public
 	 */
@@ -442,7 +442,7 @@ class Websockets {
 
 	/**
 	 * @returns {void}
-	 * @throws
+	 * @throws {Error}
 	 *
 	 * @private
 	 */
@@ -460,7 +460,7 @@ class Websockets {
 	}
 
 	/**
-	 * @throws
+	 * @throws {Error}
 	 * @private
 	 */
 	_checkConnection() {

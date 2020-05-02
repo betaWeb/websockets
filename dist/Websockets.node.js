@@ -329,7 +329,7 @@ var Websockets = /*#__PURE__*/function () {
      * 
      * @param {Object} [options={}]
      *
-     * @throws
+     * @throws {Error}
      */
 
   }], [{
@@ -495,7 +495,7 @@ var Websockets = /*#__PURE__*/function () {
      * @param {*|Object|String|ArrayBuffer|Blob} [data='']
      *
      * @returns {Promise}
-     * @throws
+     * @throws {Error}
      *
      * @public
      */
@@ -539,7 +539,7 @@ var Websockets = /*#__PURE__*/function () {
      * @param {Boolean} namespaced
      *
      * @returns {Promise}
-     * @throws
+     * @throws {Error}
      *
      * @public
      */
@@ -573,7 +573,7 @@ var Websockets = /*#__PURE__*/function () {
      * @param {Boolean} namespaced
      *
      * @returns {Websockets}
-     * @throws
+     * @throws {Error}
      *
      * @public
      * @fluent
@@ -601,7 +601,7 @@ var Websockets = /*#__PURE__*/function () {
      * @param {Boolean} namespaced
      *
      * @returns {Websockets}
-     * @throws
+     * @throws {Error}
      *
      * @public
      * @fluent
@@ -653,7 +653,7 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @returns {void}
-     * @throws
+     * @throws {Error}
      *
      * @public
      */
@@ -677,7 +677,7 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @returns {void}
-     * @throws
+     * @throws {Error}
      *
      * @public
      */
@@ -694,7 +694,7 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @returns {void}
-     * @throws
+     * @throws {Error}
      *
      * @private
      */
@@ -711,7 +711,7 @@ var Websockets = /*#__PURE__*/function () {
       }
     }
     /**
-     * @throws
+     * @throws {Error}
      * @private
      */
 

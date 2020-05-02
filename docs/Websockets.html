@@ -58,13 +58,15 @@
             
                 <li class="parent " data-name="Websockets.DEFAULT_OPTIONS"><a href="Websockets.html#.DEFAULT_OPTIONS">DEFAULT_OPTIONS</a></li>
             
+                <li class="parent " data-name="Websockets#_data_size"><a href="Websockets.html#_data_size">_data_size</a></li>
+            
                 <li class="parent " data-name="Websockets#_events"><a href="Websockets.html#_events">_events</a></li>
             
                 <li class="parent " data-name="Websockets#client"><a href="Websockets.html#client">client</a></li>
             
-                <li class="parent " data-name="Websockets#endpoint"><a href="Websockets.html#endpoint">endpoint</a></li>
-            
                 <li class="parent " data-name="Websockets#events"><a href="Websockets.html#events">events</a></li>
+            
+                <li class="parent " data-name="Websockets#hasSupport"><a href="Websockets.html#hasSupport">hasSupport</a></li>
             
                 <li class="parent " data-name="Websockets#isClosed"><a href="Websockets.html#isClosed">isClosed</a></li>
             
@@ -96,15 +98,23 @@
             
             <span class="subtitle">Methods</span>
             
+                <li class="parent  " data-name="Websockets#_checkConnection"><a href="Websockets.html#_checkConnection">_checkConnection</a></li>
+            
                 <li class="parent  " data-name="Websockets#_debug"><a href="Websockets.html#_debug">_debug</a></li>
             
                 <li class="parent  " data-name="Websockets#_dispatch"><a href="Websockets.html#_dispatch">_dispatch</a></li>
+            
+                <li class="parent  " data-name="Websockets#_instantiateClient"><a href="Websockets.html#_instantiateClient">_instantiateClient</a></li>
             
                 <li class="parent  " data-name="Websockets#_messagesHandler"><a href="Websockets.html#_messagesHandler">_messagesHandler</a></li>
             
                 <li class="parent  " data-name="Websockets#_namespacedType"><a href="Websockets.html#_namespacedType">_namespacedType</a></li>
             
+                <li class="parent  " data-name="Websockets#_prepareData"><a href="Websockets.html#_prepareData">_prepareData</a></li>
+            
                 <li class="parent  " data-name="Websockets#connect"><a href="Websockets.html#connect">connect</a></li>
+            
+                <li class="parent  " data-name="Websockets#destroy"><a href="Websockets.html#destroy">destroy</a></li>
             
                 <li class="parent  " data-name="Websockets#disconnect"><a href="Websockets.html#disconnect">disconnect</a></li>
             
@@ -115,8 +125,6 @@
                 <li class="parent  " data-name="Websockets#on"><a href="Websockets.html#on">on</a></li>
             
                 <li class="parent  " data-name="Websockets#onMessage"><a href="Websockets.html#onMessage">onMessage</a></li>
-            
-                <li class="parent  " data-name="Websockets#onProgress"><a href="Websockets.html#onProgress">onProgress</a></li>
             
                 <li class="parent  " data-name="Websockets#send"><a href="Websockets.html#send">send</a></li>
             
@@ -161,7 +169,7 @@
             <span class="">
                 new Websockets
             </span>
-            <span class="signature">(<span class="optional">endpoint</span>, <span class="optional">options</span>)</span>
+            <span class="signature">(<span class="optional">options</span>)</span>
             
             
             
@@ -202,45 +210,6 @@
 	</thead>
 	
 	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>endpoint</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">String</span>
-|
-
-<span class="param-type">Object</span>
-
-
-            
-            </td>
-            
-            
-                <td class="default">
-                
-                    ''
-                
-                </td>
-            
-            
-            <td class="description last">
-                
-                    
-                        <span class="optional">optional</span>
-                    
-                    
-                        
-                    
-                
-                </td>
-        </tr>
-	
 	
 	
         <tr>
@@ -313,6 +282,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     
@@ -482,6 +466,43 @@
 	</thead>
 	
 	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>endpoint</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">String</span>
+
+
+            
+            </td>
+            
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+                    
+                
+                </td>
+            
+            
+            
+                <td class="default">
+                
+                    ''
+                
+                </td>
+            
+            
+            <td class="description last"></td>
+        </tr>
+	
 	
 	
         <tr>
@@ -834,10 +855,57 @@
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="_data_size">
+            <a class="share-icon" href="#_data_size"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">_data_size</span>
+            <span class="type-signature type">Number</span>
+            
+            <span class="access-signature">private</span>
+            
+            
+        </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="_events">
             <a class="share-icon" href="#_events"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">_events</span>
-            <span class="type-signature type">Object</span>
+            <span class="type-signature type">Object.&lt;String, Array.&lt;function()>></span>
             
             <span class="access-signature">private</span>
             
@@ -928,10 +996,10 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="endpoint">
-            <a class="share-icon" href="#endpoint"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">endpoint</span>
-            <span class="type-signature type">String</span>
+        <h4 class="name" id="events">
+            <a class="share-icon" href="#events"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">events</span>
+            
             
             
             
@@ -975,12 +1043,12 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id="events">
-            <a class="share-icon" href="#events"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">events</span>
+        <h4 class="name" id="hasSupport">
+            <a class="share-icon" href="#hasSupport"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">hasSupport</span>
             
             
-            
+            <span class="access-signature">private</span>
             
             
         </h4>
@@ -1260,7 +1328,7 @@
         <h4 class="name" id="options">
             <a class="share-icon" href="#options"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">options</span>
-            <span class="type-signature type">Object</span>
+            <span class="type-signature type">Object.&lt;String, *></span>
             
             
             
@@ -1401,6 +1469,89 @@
         <h3 class="subsection-title">Methods</h3>
         
         <dl class="list-methods">
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="_checkConnection">
+            <a class="share-icon" href="#_checkConnection"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                _checkConnection
+            </span>
+            <span class="signature">()</span>
+            
+            <span class="access-signature">private</span>
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
+    
+    
+    
+    
+</dd>
+
+        
             
 <dt>
     <div class="nameContainer">
@@ -1632,7 +1783,19 @@
             <td class="type">
             
                 
+<span class="param-type">*</span>
+|
+
 <span class="param-type">Object</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
+|
+
+<span class="param-type">Blob</span>
 
 
             
@@ -1681,6 +1844,118 @@
     
     
     
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        void
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="_instantiateClient">
+            <a class="share-icon" href="#_instantiateClient"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                _instantiateClient
+            </span>
+            <span class="signature">()</span><span class="type-signature">void</span>
+            
+            <span class="access-signature">private</span>
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -1959,10 +2234,270 @@
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id="_prepareData">
+            <a class="share-icon" href="#_prepareData"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                _prepareData
+            </span>
+            <span class="signature">(data)</span><span class="type-signature">string | ArrayBuffer | Blob</span>
+            
+            <span class="access-signature">private</span>
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">*</span>
+|
+
+<span class="param-type">Array</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">String</span>
+|
+
+<span class="param-type">ArrayBuffer</span>
+|
+
+<span class="param-type">Blob</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                </td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        string
+                         | 
+                    
+                        ArrayBuffer
+                         | 
+                    
+                        Blob
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id="connect">
             <a class="share-icon" href="#connect"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
                 connect
+            </span>
+            <span class="signature">()</span><span class="type-signature">Promise</span>
+            
+            
+            
+            
+        </h4>
+    
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        Promise
+                        
+                    
+            </td>
+            <td class="description last"></td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="destroy">
+            <a class="share-icon" href="#destroy"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">
+                destroy
             </span>
             <span class="signature">()</span><span class="type-signature">void</span>
             
@@ -2017,6 +2552,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -2114,6 +2664,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -2318,6 +2883,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -2544,6 +3124,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -2748,6 +3343,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -2791,119 +3401,6 @@
             <a class="share-icon" href="#onMessage"><span class="glyphicon glyphicon-link"></span></a>
             <span class="">
                 onMessage
-            </span>
-            <span class="signature">(callback)</span>
-            
-            
-            
-            
-        </h4>
-    
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>callback</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">function</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                </td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
-        <h4 class="name" id="onProgress">
-            <a class="share-icon" href="#onProgress"><span class="glyphicon glyphicon-link"></span></a>
-            <span class="">
-                onProgress
             </span>
             <span class="signature">(callback)</span><span class="type-signature"><a href="Websockets.html">Websockets</a></span>
             
@@ -3047,7 +3544,7 @@
             <span class="">
                 send
             </span>
-            <span class="signature">(<span class="optional">data</span>)</span><span class="type-signature"><a href="Websockets.html">Websockets</a></span>
+            <span class="signature">(<span class="optional">data</span>)</span><span class="type-signature">Promise</span>
             
             
             
@@ -3172,6 +3669,21 @@
     
     
     
+    <h5>Throws:</h5>
+    
+            
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+
+        
     
     
     <h5>Returns:</h5>
@@ -3192,7 +3704,7 @@
             
             <td class="type">
             
-                        <a href="Websockets.html">Websockets</a>
+                        Promise
                         
                     
             </td>
@@ -3227,7 +3739,7 @@
 
         <footer class="content-size">
             <div class="footer">
-                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Fri May 01 2020 16:48:10 GMT+0200 (GMT+02:00)
+                Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.6.4</a> on Sat May 02 2020 16:46:00 GMT+0200 (GMT+02:00)
             </div>
         </footer>
     </div>
