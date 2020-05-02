@@ -248,6 +248,17 @@ var Websockets = /*#__PURE__*/function () {
       return baseUrl;
     }
     /**
+     * @returns {boolean}
+     *
+     * @private
+     */
+
+  }, {
+    key: "hasSupport",
+    get: function get() {
+      return 'WebSocket' in window || 'MozWebSocket' in window;
+    }
+    /**
      * @returns {Boolean}
      *
      * @public
@@ -325,7 +336,7 @@ var Websockets = /*#__PURE__*/function () {
     key: "DEFAULT_OPTIONS",
 
     /**
-     * @type {Object}
+     * @type {Object.<String, *>}
      * 
      * @public
      * */
@@ -337,7 +348,13 @@ var Websockets = /*#__PURE__*/function () {
      */
 
     /**
-     * @type {Object}
+     * @type {Number}
+     *
+     * @private
+     */
+
+    /**
+     * @type {Object.<String, Function[]>}
      * 
      * @private
      */
@@ -415,13 +432,19 @@ var Websockets = /*#__PURE__*/function () {
     (0, _classCallCheck2.default)(this, Websockets);
     (0, _defineProperty2.default)(this, "options", {});
     (0, _defineProperty2.default)(this, "client", null);
+    (0, _defineProperty2.default)(this, "_data_size", 0);
     (0, _defineProperty2.default)(this, "_events", {});
+
+    if (!this.hasSupport) {
+      throw new Error("[Err] Websockets.constructor - your browser cannot supports WebSockets.");
+    }
+
     this.options = _objectSpread(_objectSpread({}, Websockets.DEFAULT_OPTIONS), options);
 
     if (window.location.protocol === 'http:' && this.options.scheme === 'wss') {
-      throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.");
+      throw new Error("[Err] Websockets.constructor - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.");
     } else if (window.location.protocol === 'https:' && this.options.scheme === 'ws') {
-      throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.");
+      throw new Error("[Err] Websockets.constructor - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.");
     }
   }
   /**
@@ -438,7 +461,7 @@ var Websockets = /*#__PURE__*/function () {
 
       return new Promise(function (resolve, reject) {
         try {
-          _this.client = new WebSocket(_this.url, _this.options.protocols);
+          _this._instantiateClient();
 
           _this.client.onerror = function (event) {
             _this.options.onerror(event);
@@ -470,7 +493,6 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @param {*|Object|String|ArrayBuffer|Blob} [data='']
-     * @param {Function} progressCallback
      *
      * @returns {Promise}
      * @throws
@@ -488,12 +510,7 @@ var Websockets = /*#__PURE__*/function () {
       this._checkConnection();
 
       try {
-        if (typeof data !== 'string' && !(data instanceof ArrayBuffer) && !(data instanceof Blob)) {
-          try {
-            data = JSON.stringify(data);
-          } catch (_unused) {}
-        }
-
+        data = this._prepareData(data);
         return new Promise(function (resolve, reject) {
           try {
             _this2.client.send(data);
@@ -501,24 +518,18 @@ var Websockets = /*#__PURE__*/function () {
             _this2._debug("Message sended.\npayload : ".concat(data), 'send');
 
             if (_this2.options.onprogress !== null) {
-              var interval = setInterval(function () {
-                if (_this2.client.bufferedAmount > 0) {
-                  _this2.options.onprogress(_this2.client.bufferedAmount, data);
-                } else {
-                  _this2.options.onprogress(0, data);
-
-                  clearInterval(interval);
-                  resolve();
-                }
-              }, 100);
+              _this2._onProgress(data, resolve);
             } else {
+              _this2._data_size = 0;
               resolve();
             }
           } catch (e) {
+            _this2._data_size = 0;
             reject(e);
           }
         });
       } catch (e) {
+        this._data_size = 0;
         throw new Error("[Err] Websockets.send - ".concat(e.message));
       }
     }
@@ -527,7 +538,7 @@ var Websockets = /*#__PURE__*/function () {
      * @param {*} payload
      * @param {Boolean} namespaced
      *
-     * @returns {Websockets}
+     * @returns {Promise}
      * @throws
      *
      * @public
@@ -544,17 +555,17 @@ var Websockets = /*#__PURE__*/function () {
       if (namespaced === true) type = this._namespacedType(type);
 
       try {
-        this.send({
+        var promise = this.send({
           type: type,
           payload: payload
         });
 
         this._debug("Event '".concat(type, "' emitted."), 'emit');
+
+        return promise;
       } catch (e) {
         throw new Error(e);
       }
-
-      return this;
     }
     /**
      * @param {String} type 
@@ -572,9 +583,6 @@ var Websockets = /*#__PURE__*/function () {
     key: "on",
     value: function on(type, callback) {
       var namespaced = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-      this._checkConnection();
-
       if (namespaced === true) type = this._namespacedType(type);
 
       if (!this._events[type]) {
@@ -604,9 +612,6 @@ var Websockets = /*#__PURE__*/function () {
     value: function off(type) {
       var callback = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
       var namespaced = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-      this._checkConnection();
-
       if (namespaced === true) type = this._namespacedType(type);
 
       if (!this._events[type]) {
@@ -635,6 +640,8 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @param {Function} callback
+     *
+     * @returns {Websockets}
      *
      * @public
      */
@@ -666,6 +673,41 @@ var Websockets = /*#__PURE__*/function () {
         this.client.close();
 
         this._debug('Websockets successfully disconnected', 'disconnect');
+      }
+    }
+    /**
+     * @returns {void}
+     * @throws
+     *
+     * @public
+     */
+
+  }, {
+    key: "destroy",
+    value: function destroy() {
+      this._events = {};
+
+      this._checkConnection();
+
+      this.disconnect();
+      this.client = null;
+    }
+    /**
+     * @returns {void}
+     * @throws
+     *
+     * @private
+     */
+
+  }, {
+    key: "_instantiateClient",
+    value: function _instantiateClient() {
+      var wsConstructor = 'MozWebSocket' in window ? 'MozWebSocket' : 'WebSocket';
+
+      try {
+        this.client = new window[wsConstructor](this.url, this.options.protocols);
+      } catch (e) {
+        throw new Error("[Err] Websockets._instantiateClient - error on '".concat(wsConstructor, "' client instantiation."));
       }
     }
     /**
@@ -708,9 +750,56 @@ var Websockets = /*#__PURE__*/function () {
       };
     }
     /**
+     * @param {*|Array|Object|String|ArrayBuffer|Blob} data
+     *
+     * @return {string|ArrayBuffer|Blob}
+     *
+     * @private
+     */
+
+  }, {
+    key: "_prepareData",
+    value: function _prepareData(data) {
+      if (data === null || Array.isArray(data) || data.constructor === Object) {
+        try {
+          data = JSON.stringify(data);
+          this._data_size = data.length;
+        } catch (_unused) {}
+      } else if (data instanceof ArrayBuffer) {
+        this._data_size = data.byteLength;
+      } else if (data instanceof Blob) {
+        this._data_size = data.size;
+      } else if (typeof data === 'number' || typeof data === 'boolean' || typeof data === 'function') {
+        data = data.toString();
+        this._data_size = data.length;
+      } else if (data === undefined) {
+        data = '';
+        this._data_size = 0;
+      }
+
+      return data;
+    }
+  }, {
+    key: "_onProgress",
+    value: function _onProgress(data, resolver) {
+      var _this5 = this;
+
+      var interval = setInterval(function () {
+        if (_this5.client.bufferedAmount > 0) {
+          _this5.options.onprogress(_this5.client.bufferedAmount, _this5._data_size, data);
+        } else {
+          _this5.options.onprogress(0, _this5._data_size, data);
+
+          _this5._data_size = 0;
+          clearInterval(interval);
+          resolver();
+        }
+      }, 100);
+    }
+    /**
      * 
-     * @param {String} type 
-     * @param {Object} data
+     * @param {String} type
+     * @param {*|Object|String|ArrayBuffer|Blob} data
      * 
      * @returns {void}
      * 

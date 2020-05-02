@@ -3,7 +3,7 @@
  */
 class Websockets {
 	/**
-	 * @type {Object}
+	 * @type {Object.<String, *>}
 	 * 
 	 * @public
 	 * */
@@ -17,7 +17,14 @@ class Websockets {
 	client = null
 
 	/**
-	 * @type {Object}
+	 * @type {Number}
+	 *
+	 * @private
+	 */
+	_data_size = 0
+
+	/**
+	 * @type {Object.<String, Function[]>}
 	 * 
 	 * @private
 	 */
@@ -114,13 +121,22 @@ class Websockets {
 			baseUrl += `:${this.options.port.toString()}`
 		}
 
-		baseUrl = baseUrl.replace(/\/$/, '');
+		baseUrl = baseUrl.replace(/\/$/, '')
 
 		if (this.options.endpoint !== '') {
 			return `${baseUrl}/${this.options.endpoint}`
 		}
 
 		return baseUrl
+	}
+
+	/**
+	 * @returns {boolean}
+	 *
+	 * @private
+	 */
+	get hasSupport() {
+		return 'WebSocket' in window || 'MozWebSocket' in window
 	}
 
 	/**
@@ -197,15 +213,19 @@ class Websockets {
 	 * @throws
 	 */
 	constructor(options = {}) {
+		if (!this.hasSupport) {
+			throw new Error("[Err] Websockets.constructor - your browser cannot supports WebSockets.")
+		}
+
 		this.options = {
 			...Websockets.DEFAULT_OPTIONS,
 			...options
 		}
 
 		if (window.location.protocol === 'http:' && this.options.scheme === 'wss') {
-			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.")
+			throw new Error("[Err] Websockets.constructor - cannot use WebSockets in a mixed environment : do not open a secure WebSocket connection from a page loaded using HTTP.")
 		} else if (window.location.protocol === 'https:' && this.options.scheme === 'ws') {
-			throw new Error("[Err] Websockets.url - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.")
+			throw new Error("[Err] Websockets.constructor - cannot use WebSockets in a mixed environment : do not open a non-secure WebSocket connection from a page loaded using HTTPS.")
 		}
 	}
 
@@ -217,10 +237,7 @@ class Websockets {
 	connect() {
 		return new Promise((resolve, reject) => {
 			try {
-				this.client = new WebSocket(
-					this.url,
-					this.options.protocols
-				)
+				this._instantiateClient()
 
 				this.client.onerror = event => {
 					this.options.onerror(event)
@@ -253,7 +270,6 @@ class Websockets {
 
 	/**
 	 * @param {*|Object|String|ArrayBuffer|Blob} [data='']
-	 * @param {Function} progressCallback
 	 *
 	 * @returns {Promise}
 	 * @throws
@@ -264,41 +280,27 @@ class Websockets {
 		this._checkConnection()
 
 		try {
-			if (
-				typeof data !== 'string' && 
-				!(data instanceof ArrayBuffer) && 
-				!(data instanceof Blob)
-			) {
-				try {
-					data = JSON.stringify(data)
-				} catch {}
-			}
+			data = this._prepareData(data)
 
 			return new Promise((resolve, reject) => {
 				try {
-
 					this.client.send(data)
 
 					this._debug(`Message sended.\npayload : ${data}`, 'send')
 
 					if (this.options.onprogress !== null) {
-						const interval = setInterval(() => {
-							if (this.client.bufferedAmount > 0) {
-								this.options.onprogress(this.client.bufferedAmount, data)
-							} else {
-								this.options.onprogress(0, data)
-								clearInterval(interval);
-								resolve()
-							}
-						}, 100);
+						this._onProgress(data, resolve)
 					} else {
+						this._data_size = 0
 						resolve()
 					}
 				} catch (e) {
+					this._data_size = 0
 					reject(e)
 				}
 			})
 		} catch (e) {
+			this._data_size = 0
 			throw new Error(`[Err] Websockets.send - ${e.message}`)
 		}
 	}
@@ -308,7 +310,7 @@ class Websockets {
 	 * @param {*} payload
 	 * @param {Boolean} namespaced
 	 *
-	 * @returns {Websockets}
+	 * @returns {Promise}
 	 * @throws
 	 *
 	 * @public
@@ -320,14 +322,14 @@ class Websockets {
 			type = this._namespacedType(type)
 
 		try {
-			this.send({ type, payload })
+			let promise = this.send({ type, payload })
 
 			this._debug(`Event '${type}' emitted.`, 'emit')
+
+			return promise
 		} catch (e) {
 			throw new Error(e)
 		}
-
-		return this
 	}
 
 	/**
@@ -342,8 +344,6 @@ class Websockets {
 	 * @fluent
 	 */
 	on(type, callback, namespaced = true) {
-		this._checkConnection()
-
 		if (namespaced === true)
 			type = this._namespacedType(type)
 
@@ -370,8 +370,6 @@ class Websockets {
 	 * @fluent
 	 */
 	off(type, callback = null, namespaced = true) {
-		this._checkConnection()
-
 		if (namespaced === true)
 			type = this._namespacedType(type)
 
@@ -386,7 +384,7 @@ class Websockets {
 			)
 
 			if (this._events[type].length === 0) {
-				this.off(type, null, namespaced);
+				this.off(type, null, namespaced)
 			}
 
 			this._debug(`Event '${type}' callback successfully removed`, 'off')
@@ -400,6 +398,8 @@ class Websockets {
 
 	/**
 	 * @param {Function} callback
+	 *
+	 * @returns {Websockets}
 	 *
 	 * @public
 	 */
@@ -424,6 +424,38 @@ class Websockets {
 		} else {
 			this.client.close()
 			this._debug('Websockets successfully disconnected', 'disconnect')
+		}
+	}
+
+	/**
+	 * @returns {void}
+	 * @throws
+	 *
+	 * @public
+	 */
+	destroy() {
+		this._events = {}
+		this._checkConnection()
+		this.disconnect()
+		this.client = null
+	}
+
+	/**
+	 * @returns {void}
+	 * @throws
+	 *
+	 * @private
+	 */
+	_instantiateClient() {
+		const wsConstructor = 'MozWebSocket' in window ? 'MozWebSocket' : 'WebSocket'
+
+		try {
+			this.client = new window[wsConstructor](
+				this.url,
+				this.options.protocols
+			)
+		} catch (e) {
+			throw new Error(`[Err] Websockets._instantiateClient - error on '${wsConstructor}' client instantiation.`)
 		}
 	}
 
@@ -463,9 +495,61 @@ class Websockets {
 	}
 
 	/**
+	 * @param {*|Array|Object|String|ArrayBuffer|Blob} data
+	 *
+	 * @return {string|ArrayBuffer|Blob}
+	 *
+	 * @private
+	 */
+	_prepareData(data) {
+		if (
+			data === null ||
+			Array.isArray(data) ||
+			data.constructor === Object
+		) {
+			try {
+				data = JSON.stringify(data)
+
+				this._data_size = data.length
+			} catch {}
+		} else if (data instanceof ArrayBuffer) {
+			this._data_size = data.byteLength
+		} else if (data instanceof Blob) {
+			this._data_size = data.size
+		} else if (
+			typeof data === 'number' ||
+			typeof data === 'boolean' ||
+			typeof data === 'function'
+		) {
+			data = data.toString()
+
+			this._data_size = data.length
+		} else if (data === undefined) {
+			data = ''
+
+			this._data_size = 0
+		}
+
+		return data
+	}
+
+	_onProgress(data, resolver) {
+		const interval = setInterval(() => {
+			if (this.client.bufferedAmount > 0) {
+				this.options.onprogress(this.client.bufferedAmount, this._data_size, data)
+			} else {
+				this.options.onprogress(0, this._data_size, data)
+				this._data_size = 0
+				clearInterval(interval)
+				resolver()
+			}
+		}, 100)
+	}
+
+	/**
 	 * 
-	 * @param {String} type 
-	 * @param {Object} data
+	 * @param {String} type
+	 * @param {*|Object|String|ArrayBuffer|Blob} data
 	 * 
 	 * @returns {void}
 	 * 
