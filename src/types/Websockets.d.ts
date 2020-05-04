@@ -14,9 +14,15 @@ declare module "Websockets" {
             onclose?: Function
             onopen?: Function
             onprogress?: Function|null
-        }
+				}
+				
+				type WSEvent = {
+					callback: Function,
+					once: boolean,
+					namespaced: boolean
+				}
 
-        type Events = {[key: string]: Array<Function>}
+        type Events = {[key: string]: Array<WSEvent>}
 
         type Data = any|object|string|ArrayBuffer|Blob
 
@@ -70,6 +76,8 @@ declare module "Websockets" {
 
             emit(type: string, payload?: any, namespaced?: boolean): Promise<void|Error>
 
+						on(type: string, callback: Function, namespaced?: boolean): Websockets
+
             on(type: string, callback: Function, namespaced?: boolean): Websockets
 
             off(type: string, callback?: Function|null, namespaced?: boolean): Websockets
@@ -81,7 +89,9 @@ declare module "Websockets" {
             destroy(): void
 
 
-            // Private methods
+						// Private methods
+						_on(type: string, callback: Function, namespaced?: boolean, once?: boolean): Websockets
+
             _instantiateClient(): void
 
 						_checkConnection(): void

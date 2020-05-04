@@ -1,5 +1,10 @@
 /**
  * @class
+ *
+ * @namespace Websockets
+ * 
+ * @typedef {{once: Boolean, callback: Function, namespaced: Boolean}} WSEvent
+ * @typedef {*|Object|String|ArrayBuffer|Blob} WSData
  */
 class Websockets {
 	/**
@@ -24,7 +29,7 @@ class Websockets {
 	_data_size = 0
 
 	/**
-	 * @type {Object.<String, Function[]>}
+	 * @type {Object.<String, WSEvent[]>}
 	 * 
 	 * @private
 	 */
@@ -217,7 +222,7 @@ class Websockets {
 	}
 
 	/**
-	 * @returns {Object.<String, Function[]>}
+	 * @returns {WSEvent[]}
 	 *
 	 * @public
 	 */
@@ -290,7 +295,7 @@ class Websockets {
 	}
 
 	/**
-	 * @param {*|Object|String|ArrayBuffer|Blob} [data='']
+	 * @param {WSData} [data='']
 	 *
 	 * @returns {Promise}
 	 * @throws {Error}
@@ -366,33 +371,35 @@ class Websockets {
 	/**
 	 * @param {String} type 
 	 * @param {Function} callback 
-	 * @param {Boolean} namespaced
+	 * @param {Boolean} [namespaced=false]
 	 *
 	 * @returns {Websockets}
-	 * @throws {Error}
 	 *
 	 * @public
 	 * @fluent
 	 */
 	on(type, callback, namespaced = true) {
-		if (namespaced === true)
-			type = this._namespacedType(type)
+		return this._on(type, callback, namespaced, false)
+	}
 
-		if (!this._events[type]) {
-			this._events[type] = []
-		}
-
-		this._events[type].push(callback)
-
-		this._debug(`Event '${type}' successfully added`, 'on')
-
-		return this
+	/**
+	 * @param {String} type 
+	 * @param {Function} callback 
+	 * @param {Boolean} [namespaced=false]
+	 *
+	 * @returns {Websockets}
+	 *
+	 * @public
+	 * @fluent
+	 */
+	once(type, callback, namespaced = true) {
+		return this._on(type, callback, namespaced, true)
 	}
 
 	/**
 	 * @param {String} type
 	 * @param {Function|null} [callback=null]
-	 * @param {Boolean} namespaced
+	 * @param {Boolean} [namespaced=false]
 	 *
 	 * @returns {Websockets}
 	 * @throws {Error}
@@ -409,9 +416,9 @@ class Websockets {
 		}
 
 		if (callback !== null) {
-			this._events[type] = this._events[type].filter(cb =>
+			this._events[type] = this._events[type].filter(event =>
 				// compare functions equality
-				cb.toString().replace(/\s+/g, '') !== callback.toString().replace(/\s+/g, '')
+				event.callback.toString().replace(/\s+/g, '') !== callback.toString().replace(/\s+/g, '')
 			)
 
 			if (this._events[type].length === 0) {
@@ -475,6 +482,41 @@ class Websockets {
 		this._events = {}
 		this.disconnect()
 		this.client = null
+	}
+
+	/**
+	 * @param {String} type 
+	 * @param {Function} callback 
+	 * @param {Boolean} [namespaced=false]
+	 * @param {Boolean} [once=false]
+	 *
+	 * @returns {Websockets}
+	 *
+	 * @public
+	 * @fluent
+	 */
+	_on(type, callback, namespaced = true, once = false) {
+		if (namespaced === true)
+			type = this._namespacedType(type)
+
+		if (!this._events[type]) {
+			this._events[type] = []
+		}
+
+		/**
+		 * @var {WSEvent}
+		 */
+		const event = {
+			once,
+			callback,
+			namespaced
+		}
+
+		this._events[type].push(event)
+
+		this._debug(`Event '${type}' successfully added`, 'on')
+
+		return this
 	}
 
 	/**
@@ -543,7 +585,7 @@ class Websockets {
 	}
 
 	/**
-	 * @param {*|Array|Object|String|ArrayBuffer|Blob} data
+	 * @param {WSData} data
 	 *
 	 * @return {string|ArrayBuffer|Blob}
 	 *
@@ -583,7 +625,7 @@ class Websockets {
 
 	/**
 	 * 
-	 * @param {*|Object|String|ArrayBuffer|Blob} data
+	 * @param {WSData} data
 	 * @param {Function} resolver 
 	 */
 	_onProgress(data, resolver) {
@@ -602,7 +644,7 @@ class Websockets {
 	/**
 	 * 
 	 * @param {String} type
-	 * @param {*|Object|String|ArrayBuffer|Blob} data
+	 * @param {WSData} data
 	 * 
 	 * @returns {void}
 	 * 
@@ -611,7 +653,18 @@ class Websockets {
 	_dispatch(type, data) {
 		if (this._events[type]) {
 			this._debug(`'${type}' dispatched`, '_dispatch')
-			this._events[type].forEach(cb => cb(data))
+			this._events[type].forEach(
+				/**
+				 * @param {WSEvent} event
+				 */
+				event => {
+					event.callback(data)
+
+					if (event.once === true) {
+						this.off(type, data.callback, data.namespaced)
+					}
+				}
+			)
 		}
 	}
 

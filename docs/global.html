@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Index</title>
+    <title>Global</title>
     
     
     
@@ -190,184 +190,133 @@
 </div>
 
     <div class="main">
-        <h1 class="page-title" data-filename="index.html">Index</h1>
+        <h1 class="page-title" data-filename="global.html">Global</h1>
         
 
 
+
+<section>
+    
+<header>
+    <div class="header content-size">
+        <h2>Global
+        </h2>
+        
+    </div>
+</header>  
+
+<article class="content-size">
+    
+        <div class="container-overview">
+        
+
+        
+            
+
+            
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+
+            
+        
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <h3 class="subsection-title">Type Definitions</h3>
+        
+        <dl class="list-definitions">
+                
+<dt>
+    <div class="nameContainer">
+        <h4 class="name" id="WSData">
+            <a class="share-icon" href="#WSData"><span class="glyphicon glyphicon-link"></span></a>
+            <span class="">WSData</span>
+            <span class="type-signature type">Object</span>
+            
+            
+            
+            
+        </h4>
+    </div>
+    
+    
+</dt>
+<dd>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</dl>
+
+    
+    
+</dd>
+
+            </dl>
+    
+    
     
 
-
-    <h3> </h3>
-
-
-
-
-
-
-
-
     
+</article>
 
-
-
-
-    <section>
-        <article class="readme content-size"><h1>Websockets</h1>
-<p>A simple JavaScript class to handle browser-side Websockets.</p>
-<blockquote>
-<p>Note : this library provides an API only for browser-side Websokets.</p>
-</blockquote>
-<h2>Getting started</h2>
-<p>Include <code>Websockets.min.js</code> script in your HTML :</p>
-<pre class="prettyprint source lang-html"><code>&lt;script defer src=&quot;path/to/Websockets.min.js&quot;>&lt;/script>
-</code></pre>
-<p>And declare a new instance in your script :</p>
-<pre class="prettyprint source lang-javascript"><code>const client = new Websockets({
-    port: 9000,
-    scheme: 'ws',
-    onprogress(progress, dataSize, data) {
-        if (progress === 0) {
-            console.log('Data sended successfully !')
-        } else {
-            console.log(`${dataSize - progress}/${dataSize} bytes have been sent.`)
-        }
-    }
-})
-
-client.on(Websockets.DEFAULT_EVENTS.CONNECTED, () => {
-    console.log(&quot;It's alive ! ALIVE !&quot;)
-})
-
-client.on('wakedup', () => {
-    console.log(&quot;Waked up !&quot;)
-})
-
-await client.connect()
-
-await client.emit('wakeup', { body: &quot;It's time to wake up !&quot; })
-
-client.destroy()
-</code></pre>
-<p>And.. that's it ! :)</p>
-<p><br><br></p>
-<h2>Available getters and methods</h2>
-<h3>Getters</h3>
-<pre class="prettyprint source lang-typescript"><code>// Websockets class default options
-static DEFAULT_OPTIONS: Object.&lt;String, any>
-
-// WebSocket native API close codes
-static CLOSE_CODES: Object.&lt;Number, String>
-// Websockets class default events
-static DEFAULT_EVENTS: Object.&lt;String, String>
-
-// WebSocket schme ('auto', 'ws', 'wss')
-scheme: String
-
-// WebSocket URL
-url: String
-
-// Registered events via `Websockets.on()` method
-events: Object.&lt;String, Function[]>
-
-// returns true if WebSocket API is supported by the browser, false otherwise
-hasSupport: Boolean
-
-// returns true if WebSocket client is instantiated, false otherwise
-isInitialized: Boolean
-
-// returns true if WebSocket client is connecting, false otherwise
-isConnecting: Boolean
-
-// returns true if WebSocket client is connected, false otherwise
-isOpen: Boolean
-
-// returns true if WebSocket client is sending data, false otherwise
-isSending: Boolean
-
-// returns true if WebSocket connection is closing or closed, false otherwise
-isClosed: Boolean
-</code></pre>
-<p><br><br></p>
-<h3>Methods</h3>
-<ul>
-<li><code>connect(): Promise</code></li>
-</ul>
-<p>Connect the WebSocket client to the specified endpoint.</p>
-<pre class="prettyprint source lang-javascript"><code>await client.connect()
-</code></pre>
-<br>
-<ul>
-<li><code>send(data: any): Promise</code></li>
-</ul>
-<p>send data to server</p>
-<pre class="prettyprint source lang-javascript"><code>await client.send('PING')
-</code></pre>
-<br>
-<ul>
-<li><code>emit(type: String, payload?: any = '', namespaced?: boolean = true): Promise</code></li>
-</ul>
-<p>Format a data object with <code>type</code> and <code>payload</code>, and send it to the server. If <code>namespaced</code> is false, <code>type</code> parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.</p>
-<pre class="prettyprint source lang-javascript"><code>// Emit 'USER_MESSAGE' event to the server with a payload
-await client.emit('USER_MESSAGE', { message: 'Hello, World !', user_id: 1 })
-
-
-// Emit 'USER_MESSAGE' event to the server with a payload and without namespace
-await client.emit('USER_MESSAGE', { message: 'Hello, World !', user_id: 1 }, false)
-</code></pre>
-<br>
-<ul>
-<li><code>on(type: String, callback: Function, namespaced?: boolean = true): Websockets</code></li>
-</ul>
-<p>Add an event. If <code>namespaced</code> is false, <code>type</code> parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.</p>
-<pre class="prettyprint source lang-javascript"><code>// Listen to 'PONG' event from the server
-client.on('PONG', () => console.log('The server responds with PONG !'))
-
-// Send 'PING' event to the server
-await client.send('PING')
-</code></pre>
-<br>
-<ul>
-<li><code>off(type: String, callback?: Function = null, namespaced?: boolean = true): Websockets</code></li>
-</ul>
-<p>Removes an event. if <code>callback</code> parameter is <code>null</code>, all events of type <code>type</code> will be removed, otherwise, only the event that corresponds to the <code>callback</code> parameter will be removed. If <code>namespaced</code> is false, <code>type</code> parameter doesn't be prefixed by the namespace specified in the Websockets instance options.</p>
-<pre class="prettyprint source lang-javascript"><code>const onPong = () => console.log(&quot;The server responds with PONG !\n&quot;)
-
-// Listen to 'PONG' event from the server
-client.on('PONG', onPong)
-
-// Send 'PING' event to the server
-await client.send('PING')
-
-// Detach 'PONG' event listener
-client.off('PONG', onPong)
-</code></pre>
-<br>
-<ul>
-<li><code>onMessage(callback: Function): Websockets</code> the <code>callback</code></li>
-</ul>
-<p>parameter will be triggered with each message sent from the server.</p>
-<pre class="prettyprint source lang-javascript"><code>client.onMessage(data => console.log(data))
-</code></pre>
-<br>
-<ul>
-<li><code>disconnect(): void</code></li>
-</ul>
-<p>disconnect the WebSocket client.</p>
-<pre class="prettyprint source lang-javascript"><code>client.disconnect()
-</code></pre>
-<br>
-<ul>
-<li><code>destroy(): void</code></li>
-</ul>
-<p>Remove all Websockets events and disconnect the WebSocket client.</p>
-<pre class="prettyprint source lang-javascript"><code>client.destroy()
-</code></pre>
-<p><br><br></p>
-<h2>Instance options</h2>
-<p>TODO</p>
-<p><br><br></p></article>
-    </section>
-
+</section>  
 
 
 

@@ -177,6 +177,18 @@ describe('Websockets', () => {
         })
 
         await client.connect()
+		})
+
+		/**
+		 * @todo implement above test
+		 */
+    it.skip('Should trigger an event only once', async () => {
+        const client = new Websockets({
+            base_url: 'localhost',
+						port: 1234,
+        })
+
+        await client.connect()
     })
 
 })
