@@ -6,7 +6,9 @@ declare module "Websockets" {
             scheme?: string
             base_url?: string
             port?: number|null
-            protocols?: Array<string>
+						protocols?: Array<string>
+						connection_retries?: number
+						send_retries?: number
             debug: boolean
             onerror?: Function
             onclose?: Function
@@ -24,7 +26,11 @@ declare module "Websockets" {
 
             client: WebSocket|null
 
-            _events: Websockets.Events
+						_events: Websockets.Events
+						
+						_conn_retries: number
+
+						_send_retries: number
 
 
             // Getters
@@ -78,7 +84,9 @@ declare module "Websockets" {
             // Private methods
             _instantiateClient(): void
 
-            _checkConnection(): void
+						_checkConnection(): void
+						
+						_connectionRetry(): undefined|Promise<void|Error>
 
             _messagesHandler(): void
 

@@ -150,9 +150,33 @@ describe('Websockets', () => {
 
         client.disconnect()
 
-        expect(client.isClosed).toBeTrue()
+				expect(client.isClosed).toBeTrue()
+				
+		})
 
-        expect(() => client.emit('test', 'demo')).toThrowError('[Err] Websockets._checkConnection - connection closed.')
+		/**
+		 * @todo implement above test
+		 */
+    it.skip('Should retry 1 time on connection failure', async () => {
+        const client = new Websockets({
+            base_url: 'localhost',
+						port: 1234,
+						connection_retries: 1
+        })
+
+        await client.connect()
+		})
+
+		/**
+		 * @todo implement above test
+		 */
+    it.skip('Should retry 3 times on message send failure', async () => {
+        const client = new Websockets({
+            base_url: 'localhost',
+						port: 1234,
+        })
+
+        await client.connect()
     })
 
 })

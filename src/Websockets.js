@@ -31,11 +31,27 @@ class Websockets {
 	_events = {}
 
 	/**
+	 * @type {Number}
+	 *
+	 * @private
+	 */
+	_conn_retries = 0
+
+	/**
+	 * @type {Number}
+	 *
+	 * @private
+	 */
+	_send_retries = 0
+
+	/**
 	 * @property {String} [endpoint='']
 	 * @property {String} [namespace='']
 	 * @property {String} [scheme='auto'] 'ws', 'wss', 'auto'
 	 * @property {String} base_url default: window.location.hostname
 	 * @property {String|String[]} [protocols='']
+	 * @property {Number} [connection_retries=0]
+	 * @property {Number} [send_retries=3]
 	 * @property {Boolean} [debug=false]
 	 * @property {Object} ws_options
 	 * @property {String} [ws_options.format='json']
@@ -50,6 +66,10 @@ class Websockets {
 			base_url: window.location.hostname,
 			port: null,
 			protocols: [],
+			type_key: 'type',
+			payload_key: 'payload',
+			connection_retries: 0,
+			send_retries: 3,
 			debug: false,
 			onerror: () => {
 				throw new Error('[Err] Websockets - unhandled error')
@@ -235,7 +255,7 @@ class Websockets {
 	 * @public
 	 */
 	connect() {
-		return new Promise((resolve, reject) => {
+		return new Promise(async (resolve, reject) => {
 			try {
 				this._instantiateClient()
 
@@ -263,6 +283,7 @@ class Websockets {
 					resolve()
 				}
 			} catch (e) {
+				await this._connectionRetry()
 				reject(e)
 			}
 		})
@@ -277,7 +298,13 @@ class Websockets {
 	 * @public
 	 */
 	send(data = '') {
-		this._checkConnection()
+		if (this.isClosed) {
+			return new Promise((resolve) => {
+				console.info('[Info] Websockets.send - connection closing or closed')
+
+				resolve()
+			});
+		}
 
 		try {
 			data = this._prepareData(data)
@@ -295,6 +322,9 @@ class Websockets {
 						resolve()
 					}
 				} catch (e) {
+					/**
+					 * @todo send retry
+					 */
 					this._data_size = 0
 					reject(e)
 				}
@@ -316,13 +346,14 @@ class Websockets {
 	 * @public
 	 */
 	emit(type, payload = '', namespaced = true) {
-		this._checkConnection()
-
 		if (namespaced === true)
 			type = this._namespacedType(type)
 
 		try {
-			let promise = this.send({ type, payload })
+			let promise = this.send({ 
+				[this.options.type_key]: type, 
+				[this.options.payload_key]: payload 
+			})
 
 			this._debug(`Event '${type}' emitted.`, 'emit')
 
@@ -417,11 +448,18 @@ class Websockets {
 	 * @public
 	 */
 	disconnect() {
-		this._checkConnection()
+		if (this.isClosed) {
+			console.info('[Info] Websockets.disconnect - connection already disconnected')
+
+			return
+		}
 
 		if (this.isSending) {
 			window.setTimeout(() => this.disconnect(), 500)
 		} else {
+			this._conn_retries = 0
+			this._send_retries = 0
+
 			this.client.close()
 			this._debug('Websockets successfully disconnected', 'disconnect')
 		}
@@ -435,7 +473,6 @@ class Websockets {
 	 */
 	destroy() {
 		this._events = {}
-		this._checkConnection()
 		this.disconnect()
 		this.client = null
 	}
@@ -460,13 +497,24 @@ class Websockets {
 	}
 
 	/**
-	 * @throws {Error}
-	 * @private
+	 * @returns {undefined|Promise}
 	 */
-	_checkConnection() {
-		if (this.isClosed) {
-			throw new Error('[Err] Websockets._checkConnection - connection closed.')
+	async _connectionRetry() {
+		if (this._conn_retries >= this.options.connection_retries) {
+			if (this.options.connection_retries > 0) {
+				this._debug(`Cannot establish connection after ${this._conn_retries} attempts`, '_connectionRetry')
+			}
+
+			this._conn_retries = 0
+
+			return
 		}
+
+		this._conn_retries++
+
+		this._debug(`Connection retry ${this._conn_retries}/${this.options.connection_retries}`, '_connectionRetry')
+
+		await this.connect()
 	}
 
 	/**
@@ -488,8 +536,8 @@ class Websockets {
 				data
 			)
 
-			if (data.type !== undefined) {
-				this._dispatch(data.type, data)
+			if (data[this.options.type_key] !== undefined) {
+				this._dispatch(data[this.options.type_key], data)
 			}
 		}
 	}
@@ -533,6 +581,11 @@ class Websockets {
 		return data
 	}
 
+	/**
+	 * 
+	 * @param {*|Object|String|ArrayBuffer|Blob} data
+	 * @param {Function} resolver 
+	 */
 	_onProgress(data, resolver) {
 		const interval = setInterval(() => {
 			if (this.client.bufferedAmount > 0) {
