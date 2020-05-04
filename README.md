@@ -42,7 +42,7 @@ client.destroy()
 
 And.. that's it ! :) 
 
-<br><br>
+<br><br><br>
 
 ## Available getters and methods
 ### Getters
@@ -83,33 +83,42 @@ isSending: Boolean
 isClosed: Boolean
 ```
 
-<br><br>
+<br><br><br>
 
 ### Methods
-* `connect(): Promise`
+```typescript
+connect(): Promise
+```
 
 Connect the WebSocket client to the specified endpoint.
 
+__Example :__
 ```javascript
 await client.connect()
 ```
 
-<br>
+<br><hr><br>
 
-* `send(data: any): Promise`
+```typescript
+send(data: any): Promise
+```
 
-send data to server
+send data to the server.
 
+__Example :__
 ```javascript
 await client.send('PING')
 ```
 
-<br>
+<br><hr><br>
 
-* `emit(type: String, payload?: any = '', namespaced?: boolean = true): Promise`
+```typescript
+emit(type: String, payload?: any = '', namespaced?: boolean = true): Promise
+```
 
 Format a data object with `type` and `payload`, and send it to the server. If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
 
+__Example :__
 ```javascript
 // Emit 'USER_MESSAGE' event to the server with a payload
 await client.emit('USER_MESSAGE', { message: 'Hello, World !', user_id: 1 })
@@ -119,12 +128,15 @@ await client.emit('USER_MESSAGE', { message: 'Hello, World !', user_id: 1 })
 await client.emit('USER_MESSAGE', { message: 'Hello, World !', user_id: 1 }, false)
 ```
 
-<br>
+<br><hr><br>
 
-* `on(type: String, callback: Function, namespaced?: boolean = true): Websockets`
+```typescript
+on(type: String, callback: Function, namespaced?: boolean = true): Websockets
+```
 
 Add an event. If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
 
+__Example :__
 ```javascript
 // Listen to 'PONG' event from the server
 client.on('PONG', () => console.log('The server responds with PONG !'))
@@ -133,13 +145,16 @@ client.on('PONG', () => console.log('The server responds with PONG !'))
 await client.send('PING')
 ```
 
-<br>
+<br><hr><br>
 
-* `once(type: String, callback: Function, namespaced?: boolean = true): Websockets`
+```typescript
+once(type: String, callback: Function, namespaced?: boolean = true): Websockets
+```
 
 Add an event. This event will be listenend only once. After that, it will be deleted.
 If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
 
+__Example :__
 ```javascript
 // Listen to 'PONG' event from the server
 client.once('PONG', () => console.log('This event is unique !'))
@@ -148,12 +163,15 @@ client.once('PONG', () => console.log('This event is unique !'))
 await client.send('PING')
 ```
 
-<br>
+<br><hr><br>
 
-* `off(type: String, callback?: Function = null, namespaced?: boolean = true): Websockets`
+```typescript
+off(type: String, callback?: Function = null, namespaced?: boolean = true): Websockets
+```
 
 Removes an event. if `callback` parameter is `null`, all events of type `type` will be removed, otherwise, only the event that corresponds to the `callback` parameter will be removed. If `namespaced` is false, `type` parameter doesn't be prefixed by the namespace specified in the Websockets instance options.
 
+__Example :__
 ```javascript
 const onPong = () => console.log("The server responds with PONG !\n")
 
@@ -167,37 +185,46 @@ await client.send('PING')
 client.off('PONG', onPong)
 ```
 
-<br>
+<br><hr><br>
 
-* `onMessage(callback: Function): Websockets` the `callback`
+```typescript
+onMessage(callback: Function): Websockets
+```
 
-parameter will be triggered with each message sent from the server.
+The callback parameter will be triggered with each message sent from the server.
 
+__Example :__
 ```javascript
 client.onMessage(data => console.log(data))
 ```
 
-<br>
+<br><hr><br>
 
-* `disconnect(): void`
+```typescript
+disconnect(): void
+```
 
 disconnect the WebSocket client.
 
+__Example :__
 ```javascript
 client.disconnect()
 ```
 
-<br>
+<br><hr><br>
 
-* `destroy(): void`
+```typescript
+destroy(): void
+```
 
 Remove all Websockets events and disconnect the WebSocket client.
 
+__Example :__
 ```javascript
 client.destroy()
 ```
 
-<br><br>
+<br><br><br>
 
 ## Instance options
 
