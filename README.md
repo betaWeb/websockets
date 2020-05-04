@@ -62,7 +62,7 @@ scheme: String
 url: String
 
 // Registered events via `Websockets.on()` method
-events: Object.<String, Function[]>
+events: Object.<String, Array>
 
 // returns true if WebSocket API is supported by the browser, false otherwise
 hasSupport: Boolean
@@ -128,6 +128,21 @@ Add an event. If `namespaced` is false, `type` parameter will doesn't be prefixe
 ```javascript
 // Listen to 'PONG' event from the server
 client.on('PONG', () => console.log('The server responds with PONG !'))
+
+// Send 'PING' event to the server
+await client.send('PING')
+```
+
+<br>
+
+* `once(type: String, callback: Function, namespaced?: boolean = true): Websockets`
+
+Add an event. This event will be listenend only once. After that, it will be deleted.
+If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
+
+```javascript
+// Listen to 'PONG' event from the server
+client.once('PONG', () => console.log('This event is unique !'))
 
 // Send 'PING' event to the server
 await client.send('PING')
