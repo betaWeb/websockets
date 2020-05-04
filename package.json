@@ -1,6 +1,6 @@
 {
-  "name": "websockets",
-  "version": "0.0.1",
+  "name": "@betaweb/websockets",
+  "version": "1.0.0",
   "keywords": [
     "websocket-client",
     "websocket",
