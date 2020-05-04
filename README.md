@@ -46,23 +46,49 @@ And.. that's it ! :)
 
 ## Available getters and methods
 ### Getters
-* `static DEFAULT_OPTIONS: Object.<String, any>` Websockets class default options
-* `static CLOSE_CODES: Object.<Number, String>` WebSocket native API close codes
-* `static DEFAULT_EVENTS: Object.<String, String>` Websockets class default events
-* `scheme: String`
-* `url: String`
-* `events: Object.<String, Function[]>`
-* `hasSupport: Boolean` returns true if WebSocket API is supported by the browser, false otherwise
-* `isInitialized: Boolean` returns true if WebSocket client is instantiated, false otherwise
-* `isConnecting: Boolean` returns true if WebSocket client is connecting, false otherwise
-* `isOpen: Boolean` returns true if WebSocket client is connected, false otherwise
-* `isSending: Boolean` returns true if WebSocket client is sending data, false otherwise
-* `isClosed: Boolean` returns true if WebSocket connection is closing or closed, false otherwise
+```typescript
+// Websockets class default options
+static DEFAULT_OPTIONS: Object.<String, any>
+
+// WebSocket native API close codes
+static CLOSE_CODES: Object.<Number, String>
+// Websockets class default events
+static DEFAULT_EVENTS: Object.<String, String>
+
+// WebSocket schme ('auto', 'ws', 'wss')
+scheme: String
+
+// WebSocket URL
+url: String
+
+// Registered events via `Websockets.on()` method
+events: Object.<String, Function[]>
+
+// returns true if WebSocket API is supported by the browser, false otherwise
+hasSupport: Boolean
+
+// returns true if WebSocket client is instantiated, false otherwise
+isInitialized: Boolean
+
+// returns true if WebSocket client is connecting, false otherwise
+isConnecting: Boolean
+
+// returns true if WebSocket client is connected, false otherwise
+isOpen: Boolean
+
+// returns true if WebSocket client is sending data, false otherwise
+isSending: Boolean
+
+// returns true if WebSocket connection is closing or closed, false otherwise
+isClosed: Boolean
+```
 
 <br><br>
 
 ### Methods
 * `connect(): Promise`
+
+Connect the WebSocket client to the specified endpoint.
 
 ```javascript
 await client.connect()
@@ -82,7 +108,7 @@ await client.send('PING')
 
 * `emit(type: String, payload?: any = '', namespaced?: boolean = true): Promise`
 
-format a data object with `type` and `payload`, and send it to the server. If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
+Format a data object with `type` and `payload`, and send it to the server. If `namespaced` is false, `type` parameter will doesn't be prefixed by the namespace specified in the Websockets instance options.
 
 ```javascript
 // Emit 'USER_MESSAGE' event to the server with a payload

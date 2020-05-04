@@ -76,7 +76,7 @@ declare module "Websockets" {
 
             onMessage(callback: Function): Websockets
 
-            disconnect(): void
+            disconnect(): void|undefined
 
             destroy(): void
 

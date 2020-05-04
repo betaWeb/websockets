@@ -442,7 +442,7 @@ class Websockets {
 	}
 
 	/**
-	 * @returns {void}
+	 * @returns {void|undefined}
 	 * @throws {Error}
 	 *
 	 * @public
