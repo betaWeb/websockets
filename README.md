@@ -86,6 +86,7 @@ isClosed: Boolean
 <br><br><br>
 
 ### Methods
+
 ```typescript
 connect(): Promise
 ```

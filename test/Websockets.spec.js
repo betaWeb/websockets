@@ -3,7 +3,6 @@ import domExtra from '@testing-library/jest-dom'
 import WS from "jest-websocket-mock"
 
 expect.extend(domExtra)
-jest.setTimeout(10 * 1000)
 
 function expectServerHasMessage (server, data) {
     setTimeout(async () => {

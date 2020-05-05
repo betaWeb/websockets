@@ -1008,6 +1008,7 @@ function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (O
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { (0, _defineProperty2.default)(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
+var WebsocketsMessage = __webpack_require__(/*! ./WebsocketsMessage */ "./src/WebsocketsMessage.js");
 /**
  * @class
  *
@@ -1016,6 +1017,8 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  * @typedef {{once: Boolean, callback: Function, namespaced: Boolean}} WSEvent
  * @typedef {*|Object|String|ArrayBuffer|Blob} WSData
  */
+
+
 var Websockets = /*#__PURE__*/function () {
   (0, _createClass2.default)(Websockets, [{
     key: "scheme",
@@ -1133,6 +1136,17 @@ var Websockets = /*#__PURE__*/function () {
       return this._events;
     }
     /**
+     * @returns {WebsocketsMessage}
+     *
+     * @public
+     */
+
+  }, {
+    key: "currentData",
+    get: function get() {
+      return this._current_data;
+    }
+    /**
      * @constructor
      * 
      * @param {Object} [options={}]
@@ -1156,7 +1170,7 @@ var Websockets = /*#__PURE__*/function () {
      */
 
     /**
-     * @type {Number}
+     * @type {WebsocketsMessage|null}
      *
      * @private
      */
@@ -1258,7 +1272,7 @@ var Websockets = /*#__PURE__*/function () {
     (0, _classCallCheck2.default)(this, Websockets);
     (0, _defineProperty2.default)(this, "options", {});
     (0, _defineProperty2.default)(this, "client", null);
-    (0, _defineProperty2.default)(this, "_data_size", 0);
+    (0, _defineProperty2.default)(this, "_current_data", null);
     (0, _defineProperty2.default)(this, "_events", {});
     (0, _defineProperty2.default)(this, "_conn_retries", 0);
     (0, _defineProperty2.default)(this, "_send_retries", 0);
@@ -1370,29 +1384,31 @@ var Websockets = /*#__PURE__*/function () {
       }
 
       try {
-        data = this._prepareData(data);
+        this._current_data = new WebsocketsMessage(data);
         return new Promise(function (resolve, reject) {
           try {
-            _this2.client.send(data);
+            var _data = _this2._current_data.serialize();
 
-            _this2._debug("Message sended.\npayload : ".concat(data), 'send');
+            _this2.client.send(_data);
+
+            _this2._debug("Message sended.\npayload : ".concat(_data), 'send');
 
             if (_this2.options.onprogress !== null) {
-              _this2._onProgress(data, resolve);
+              _this2._onProgress(_data, resolve);
             } else {
-              _this2._data_size = 0;
+              _this2._current_data = null;
               resolve();
             }
           } catch (e) {
             /**
              * @todo send retry
              */
-            _this2._data_size = 0;
+            _this2._current_data = null;
             reject(e);
           }
         });
       } catch (e) {
-        this._data_size = 0;
+        this._current_data = null;
         throw new Error("[Err] Websockets.send - ".concat(e.message));
       }
     }
@@ -1567,7 +1583,7 @@ var Websockets = /*#__PURE__*/function () {
      *
      * @returns {Websockets}
      *
-     * @public
+     * @private
      * @fluent
      */
 
@@ -1618,6 +1634,8 @@ var Websockets = /*#__PURE__*/function () {
     }
     /**
      * @returns {undefined|Promise}
+     * 
+     * @private
      */
 
   }, {
@@ -1674,13 +1692,7 @@ var Websockets = /*#__PURE__*/function () {
       var _this4 = this;
 
       this.client.onmessage = function (event) {
-        var data;
-
-        try {
-          data = JSON.parse(event.data);
-        } catch (e) {
-          data = event.data;
-        }
+        var data = new WebsocketsMessage(event.data).unserialize();
 
         _this4._dispatch(Websockets.DEFAULT_EVENTS.MESSAGE, data);
 
@@ -1690,39 +1702,11 @@ var Websockets = /*#__PURE__*/function () {
       };
     }
     /**
-     * @param {WSData} data
-     *
-     * @return {string|ArrayBuffer|Blob}
-     *
-     * @private
-     */
-
-  }, {
-    key: "_prepareData",
-    value: function _prepareData(data) {
-      if (data === null || Array.isArray(data) || data.constructor === Object) {
-        try {
-          data = JSON.stringify(data);
-          this._data_size = data.length;
-        } catch (_unused) {}
-      } else if (data instanceof ArrayBuffer) {
-        this._data_size = data.byteLength;
-      } else if (data instanceof Blob) {
-        this._data_size = data.size;
-      } else if (typeof data === 'number' || typeof data === 'boolean' || typeof data === 'function') {
-        data = data.toString();
-        this._data_size = data.length;
-      } else if (data === undefined) {
-        data = '';
-        this._data_size = 0;
-      }
-
-      return data;
-    }
-    /**
      * 
      * @param {WSData} data
      * @param {Function} resolver 
+     * 
+     * @private
      */
 
   }, {
@@ -1732,11 +1716,11 @@ var Websockets = /*#__PURE__*/function () {
 
       var interval = setInterval(function () {
         if (_this5.client.bufferedAmount > 0) {
-          _this5.options.onprogress(_this5.client.bufferedAmount, _this5._data_size, data);
+          _this5.options.onprogress(_this5.client.bufferedAmount, _this5._current_data.size, data);
         } else {
-          _this5.options.onprogress(0, _this5._data_size, data);
+          _this5.options.onprogress(0, _this5._current_data.size, data);
 
-          _this5._data_size = 0;
+          _this5._current_data = null;
           clearInterval(interval);
           resolver();
         }
@@ -1820,6 +1804,142 @@ if ( true && typeof module.exports !== 'undefined' && typeof global !== 'undefin
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   if (!('Websockets' in window)) {
     window['Websockets'] = Websockets;
+  }
+}
+
+/***/ }),
+
+/***/ "./src/WebsocketsMessage.js":
+/*!**********************************!*\
+  !*** ./src/WebsocketsMessage.js ***!
+  \**********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var _interopRequireDefault = __webpack_require__(/*! @babel/runtime/helpers/interopRequireDefault */ "./node_modules/@babel/runtime/helpers/interopRequireDefault.js");
+
+var _classCallCheck2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/classCallCheck */ "./node_modules/@babel/runtime/helpers/classCallCheck.js"));
+
+var _createClass2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/createClass */ "./node_modules/@babel/runtime/helpers/createClass.js"));
+
+var _defineProperty2 = _interopRequireDefault(__webpack_require__(/*! @babel/runtime/helpers/defineProperty */ "./node_modules/@babel/runtime/helpers/defineProperty.js"));
+
+/**
+ * @class
+ * 
+ * @namespace WebsocketsMessage
+ * 
+ * @typedef {*|Object|String|ArrayBuffer|Blob} WSData
+ */
+var WebsocketsMessage = /*#__PURE__*/function () {
+  (0, _createClass2.default)(WebsocketsMessage, [{
+    key: "data",
+
+    /**
+     * @type {WSData}
+     * 
+     * @private
+     */
+
+    /**
+     * @type {Number}
+     * 
+     * @private
+     */
+
+    /**
+     * @returns {WSData}
+     * 
+     * @public
+     */
+    get: function get() {
+      return this._data;
+    }
+    /**
+     * @returns {Number}
+     * 
+     * @public
+     */
+
+  }, {
+    key: "size",
+    get: function get() {
+      return this._size;
+    }
+    /**
+     * @constructor
+     *
+     * @param {WSData} [data='']
+     *
+     * @throws {Error}
+     */
+
+  }]);
+
+  function WebsocketsMessage() {
+    var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+    (0, _classCallCheck2.default)(this, WebsocketsMessage);
+    (0, _defineProperty2.default)(this, "_data", '');
+    (0, _defineProperty2.default)(this, "_size", 0);
+    this._data = data;
+  }
+  /**
+   * @returns {String|ArrayBuffer|Blob}
+   * 
+   * @public
+   */
+
+
+  (0, _createClass2.default)(WebsocketsMessage, [{
+    key: "serialize",
+    value: function serialize() {
+      if (this._data === null || Array.isArray(this._data) || this._data.constructor === Object) {
+        try {
+          this._data = JSON.stringify(this._data);
+          this._size = this._data.length;
+        } catch (_unused) {}
+      } else if (this._data instanceof ArrayBuffer) {
+        this._size = this._data.byteLength;
+      } else if (this._data instanceof Blob) {
+        this._size = this._data.size;
+      } else if (typeof this._data === 'number' || typeof this._data === 'boolean' || typeof this._data === 'function') {
+        this._data = this._data.toString();
+        this._size = this._data.length;
+      } else if (this._data === undefined) {
+        this._data = '';
+        this._size = 0;
+      }
+
+      return this._data;
+    }
+    /**
+     * @returns {WSData}
+     */
+
+  }, {
+    key: "unserialize",
+    value: function unserialize() {
+      try {
+        return JSON.parse(this._data);
+      } catch (e) {
+        return this._data;
+      }
+    }
+  }]);
+  return WebsocketsMessage;
+}();
+
+if ( true && typeof module.exports !== 'undefined' && typeof global !== 'undefined') {
+  module.exports = WebsocketsMessage;
+} // Browser side
+
+
+if (typeof window !== 'undefined' && typeof document !== 'undefined') {
+  if (!('WebsocketsMessage' in window)) {
+    window['WebsocketsMessage'] = WebsocketsMessage;
   }
 }
 

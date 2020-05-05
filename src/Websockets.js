@@ -1,3 +1,5 @@
+const WebsocketsMessage = require('./WebsocketsMessage')
+
 /**
  * @class
  *
@@ -22,11 +24,11 @@ class Websockets {
 	client = null
 
 	/**
-	 * @type {Number}
+	 * @type {WebsocketsMessage|null}
 	 *
 	 * @private
 	 */
-	_data_size = 0
+	_current_data = null
 
 	/**
 	 * @type {Object.<String, WSEvent[]>}
@@ -231,6 +233,15 @@ class Websockets {
 	}
 
 	/**
+	 * @returns {WebsocketsMessage}
+	 *
+	 * @public
+	 */
+	get currentData() {
+		return this._current_data
+	}
+
+	/**
 	 * @constructor
 	 * 
 	 * @param {Object} [options={}]
@@ -312,10 +323,12 @@ class Websockets {
 		}
 
 		try {
-			data = this._prepareData(data)
+			this._current_data = new WebsocketsMessage(data)
 
 			return new Promise((resolve, reject) => {
 				try {
+					const data = this._current_data.serialize()
+
 					this.client.send(data)
 
 					this._debug(`Message sended.\npayload : ${data}`, 'send')
@@ -323,19 +336,22 @@ class Websockets {
 					if (this.options.onprogress !== null) {
 						this._onProgress(data, resolve)
 					} else {
-						this._data_size = 0
+						this._current_data = null
+
 						resolve()
 					}
 				} catch (e) {
 					/**
 					 * @todo send retry
 					 */
-					this._data_size = 0
+					this._current_data = null
+
 					reject(e)
 				}
 			})
 		} catch (e) {
-			this._data_size = 0
+			this._current_data = null
+
 			throw new Error(`[Err] Websockets.send - ${e.message}`)
 		}
 	}
@@ -492,7 +508,7 @@ class Websockets {
 	 *
 	 * @returns {Websockets}
 	 *
-	 * @public
+	 * @private
 	 * @fluent
 	 */
 	_on(type, callback, namespaced = true, once = false) {
@@ -540,6 +556,8 @@ class Websockets {
 
 	/**
 	 * @returns {undefined|Promise}
+	 * 
+	 * @private
 	 */
 	async _connectionRetry() {
 		if (this._conn_retries >= this.options.connection_retries) {
@@ -566,12 +584,7 @@ class Websockets {
 	 */
 	_messagesHandler() {
 		this.client.onmessage = event => {
-			let data
-			try {
-				data = JSON.parse(event.data)
-			} catch (e) {
-				data = event.data
-			}
+			let data = (new WebsocketsMessage(event.data)).unserialize()
 
 			this._dispatch(
 				Websockets.DEFAULT_EVENTS.MESSAGE,
@@ -585,56 +598,19 @@ class Websockets {
 	}
 
 	/**
-	 * @param {WSData} data
-	 *
-	 * @return {string|ArrayBuffer|Blob}
-	 *
-	 * @private
-	 */
-	_prepareData(data) {
-		if (
-			data === null ||
-			Array.isArray(data) ||
-			data.constructor === Object
-		) {
-			try {
-				data = JSON.stringify(data)
-
-				this._data_size = data.length
-			} catch {}
-		} else if (data instanceof ArrayBuffer) {
-			this._data_size = data.byteLength
-		} else if (data instanceof Blob) {
-			this._data_size = data.size
-		} else if (
-			typeof data === 'number' ||
-			typeof data === 'boolean' ||
-			typeof data === 'function'
-		) {
-			data = data.toString()
-
-			this._data_size = data.length
-		} else if (data === undefined) {
-			data = ''
-
-			this._data_size = 0
-		}
-
-		return data
-	}
-
-	/**
 	 * 
 	 * @param {WSData} data
 	 * @param {Function} resolver 
+	 * 
+	 * @private
 	 */
 	_onProgress(data, resolver) {
 		const interval = setInterval(() => {
 			if (this.client.bufferedAmount > 0) {
-				this.options.onprogress(this.client.bufferedAmount, this._data_size, data)
+				this.options.onprogress(this.client.bufferedAmount, this._current_data.size, data)
 			} else {
-				this.options.onprogress(0, this._data_size, data)
-				this._data_size = 0
+				this.options.onprogress(0, this._current_data.size, data)
+				this._current_data = null
 				clearInterval(interval)
 				resolver()
 			}

@@ -1,5 +1,6 @@
 declare module "Websockets" {
-    namespace Websockets {
+	namespace Websockets {
+				// Types & interfaces
         interface Options {
             endpoint?: string
             namespace?: string
@@ -99,10 +100,6 @@ declare module "Websockets" {
 						_connectionRetry(): undefined|Promise<void|Error>
 
             _messagesHandler(): void
-
-            _prepareData(data: Websockets.Data): Websockets.Data
-
-            _prepareData(data: Websockets.Data, resolver: Function): void
 
             _dispatch(type: string, data: Websockets.Data): void
 
