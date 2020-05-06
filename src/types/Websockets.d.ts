@@ -41,19 +41,19 @@ declare module "Websockets" {
 
 
             // Getters
-						readonly DEFAULT_OPTIONS: Websockets.Options
+						readonly static DEFAULT_OPTIONS: Websockets.Options
 
-						readonly CLOSE_STATUS: { [key: string]: number }
+						readonly static CLOSE_STATUS: { [key: string]: number }
 
-						readonly CLOSE_STATUS_MESSAGES: {[key: number]: string}
+						readonly static CLOSE_STATUS_MESSAGES: {[key: number]: string}
 
-            readonly DEFAULT_EVENTS: {[key: string]: string}
+						readonly static DEFAULT_EVENTS: { [key: string]: string }
+
+						readonly static hasSupport: boolean
 
             readonly scheme: string
 
             readonly url: string
-
-            readonly hasSupport: boolean
 
             readonly isInitialized: boolean
 

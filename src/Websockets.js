@@ -147,6 +147,15 @@ class Websockets {
 	}
 
 	/**
+	 * @returns {boolean}
+	 *
+	 * @private
+	 */
+	static get hasSupport() {
+		return 'WebSocket' in window || 'MozWebSocket' in window
+	}
+
+	/**
 	 * @returns {String}
 	 *
 	 * @public
@@ -180,15 +189,6 @@ class Websockets {
 		}
 
 		return baseUrl
-	}
-
-	/**
-	 * @returns {boolean}
-	 *
-	 * @private
-	 */
-	get hasSupport() {
-		return 'WebSocket' in window || 'MozWebSocket' in window
 	}
 
 	/**
@@ -274,7 +274,7 @@ class Websockets {
 	 * @throws {Error}
 	 */
 	constructor(options = {}) {
-		if (!this.hasSupport) {
+		if (!Websockets.hasSupport) {
 			throw new Error("[Err] Websockets.constructor - your browser cannot supports WebSockets.")
 		}
 

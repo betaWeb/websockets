@@ -59,6 +59,9 @@ static CLOSE_STATUS_MESSAGES: Object.<Number, String>
 // Websockets class default events
 static DEFAULT_EVENTS: Object.<String, String>
 
+// returns true if WebSocket API is supported by the actual browser, false otherwise
+static hasSupport: Boolean
+
 // WebSocket schme ('auto', 'ws', 'wss')
 scheme: String
 
@@ -67,9 +70,6 @@ url: String
 
 // Registered events via `Websockets.on()` method
 events: Object.<String, Array>
-
-// returns true if WebSocket API is supported by the browser, false otherwise
-hasSupport: Boolean
 
 // returns true if WebSocket client is instantiated, false otherwise
 isInitialized: Boolean

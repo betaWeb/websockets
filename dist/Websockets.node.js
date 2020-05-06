@@ -1059,17 +1059,6 @@ var Websockets = /*#__PURE__*/function () {
       return baseUrl;
     }
     /**
-     * @returns {boolean}
-     *
-     * @private
-     */
-
-  }, {
-    key: "hasSupport",
-    get: function get() {
-      return 'WebSocket' in window || 'MozWebSocket' in window;
-    }
-    /**
      * @returns {Boolean}
      *
      * @public
@@ -1277,6 +1266,17 @@ var Websockets = /*#__PURE__*/function () {
         MESSAGE: '_message'
       };
     }
+    /**
+     * @returns {boolean}
+     *
+     * @private
+     */
+
+  }, {
+    key: "hasSupport",
+    get: function get() {
+      return 'WebSocket' in window || 'MozWebSocket' in window;
+    }
   }]);
 
   function Websockets() {
@@ -1289,7 +1289,7 @@ var Websockets = /*#__PURE__*/function () {
     (0, _defineProperty2.default)(this, "_conn_retries", 0);
     (0, _defineProperty2.default)(this, "_send_retries", 0);
 
-    if (!this.hasSupport) {
+    if (!Websockets.hasSupport) {
       throw new Error("[Err] Websockets.constructor - your browser cannot supports WebSockets.");
     }
 
