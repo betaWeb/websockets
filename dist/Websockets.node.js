@@ -1229,29 +1229,41 @@ var Websockets = /*#__PURE__*/function () {
       };
     }
     /**
+     * @returns {Object.<String, Number>}
+     */
+
+  }, {
+    key: "CLOSE_STATUS",
+    get: function get() {
+      return {
+        'NORMAL_CLOSURE': 1000,
+        'GOING_AWAY': 1001,
+        'PROTOCOL_ERROR': 1002,
+        'UNSUPPORTED_DATA': 1003,
+        'STATUS_NO_RECEIVED': 1005,
+        'ABNORMAL_CLOSURE': 1006,
+        'INVALID_FRAME_PAYLOAD_DATA': 1007,
+        'POLICY_VIOLATION': 1008,
+        'MESSAGE_TOO_BIG': 1009,
+        'MISSING_EXTENSION': 1010,
+        'INTERNAL_ERROR': 1011,
+        'SERVICE_RESTART': 1012,
+        'TRY_AGAIN_LATER': 1013,
+        'BAD_GATEWAY': 1014,
+        'TLS_HANDSHAKE': 1015
+      };
+    }
+    /**
      * @returns {Object.<Number, String>}
      */
 
   }, {
-    key: "CLOSE_CODES",
+    key: "CLOSE_STATUS_MESSAGES",
     get: function get() {
-      return {
-        1000: 'Normal closure',
-        1001: 'Going Away',
-        1002: 'Protocol Error',
-        1003: 'Unsupported Data',
-        1005: 'No Status Received',
-        1006: 'Abnormal Closure',
-        1007: 'Invalid frame payload data',
-        1008: 'Policy Violation',
-        1009: 'Message too big',
-        1010: 'Missing Extension',
-        1011: 'Internal Server Error',
-        1012: 'Service Restart',
-        1013: 'Try Again Later',
-        1014: 'Bad Gateway',
-        1015: 'TLS Handshake'
-      };
+      var _ref;
+
+      var status = Websockets.CLOSE_STATUS;
+      return _ref = {}, (0, _defineProperty2.default)(_ref, status.NORMAL_CLOSURE, 'Normal closure'), (0, _defineProperty2.default)(_ref, status.GOING_AWAY, 'Going Away'), (0, _defineProperty2.default)(_ref, status.PROTOCOL_ERROR, 'Protocol Error'), (0, _defineProperty2.default)(_ref, status.UNSUPPORTED_DATA, 'Unsupported Data'), (0, _defineProperty2.default)(_ref, status.STATUS_NO_RECEIVED, 'No Status Received'), (0, _defineProperty2.default)(_ref, status.ABNORMAL_CLOSURE, 'Abnormal Closure'), (0, _defineProperty2.default)(_ref, status.INVALID_FRAME_PAYLOAD_DATA, 'Invalid frame payload data'), (0, _defineProperty2.default)(_ref, status.POLICY_VIOLATION, 'Policy Violation'), (0, _defineProperty2.default)(_ref, status.MESSAGE_TOO_BIG, 'Message too big'), (0, _defineProperty2.default)(_ref, status.MISSING_EXTENSION, 'Missing Extension'), (0, _defineProperty2.default)(_ref, status.INTERNAL_ERROR, 'Internal Error'), (0, _defineProperty2.default)(_ref, status.SERVICE_RESTART, 'Service Restart'), (0, _defineProperty2.default)(_ref, status.TRY_AGAIN_LATER, 'Try Again Later'), (0, _defineProperty2.default)(_ref, status.BAD_GATEWAY, 'Bad Gateway'), (0, _defineProperty2.default)(_ref, status.TLS_HANDSHAKE, 'TLS Handshake'), _ref;
     }
     /**
      * @returns {Object.<String, String>}
@@ -1302,7 +1314,7 @@ var Websockets = /*#__PURE__*/function () {
       var _this = this;
 
       return new Promise( /*#__PURE__*/function () {
-        var _ref = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(resolve, reject) {
+        var _ref2 = (0, _asyncToGenerator2.default)( /*#__PURE__*/_regenerator.default.mark(function _callee(resolve, reject) {
           return _regenerator.default.wrap(function _callee$(_context) {
             while (1) {
               switch (_context.prev = _context.next) {
@@ -1327,7 +1339,7 @@ var Websockets = /*#__PURE__*/function () {
                     _this.options.onopen(event);
 
                     _this.client.onclose = function (event) {
-                      var reason = Websockets.CLOSE_CODES[event.code] ? Websockets.CLOSE_CODES[event.code] : 'Unknown Reason';
+                      var reason = Websockets.CLOSE_STATUS_MESSAGES[event.code] ? Websockets.CLOSE_STATUS_MESSAGES[event.code] : 'Unknown Reason';
 
                       _this.options.onclose(event, reason);
                     };
@@ -1356,7 +1368,7 @@ var Websockets = /*#__PURE__*/function () {
         }));
 
         return function (_x, _x2) {
-          return _ref.apply(this, arguments);
+          return _ref2.apply(this, arguments);
         };
       }());
     }

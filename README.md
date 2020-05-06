@@ -50,8 +50,12 @@ And.. that's it ! :)
 // Websockets class default options
 static DEFAULT_OPTIONS: Object.<String, any>
 
-// WebSocket native API close codes
-static CLOSE_CODES: Object.<Number, String>
+// WebSocket native API close codes by status
+static CLOSE_STATUS: Object.<String, Number>
+
+// WebSocket  native API close messages by codes
+static CLOSE_STATUS_MESSAGES: Object.<Number, String>
+
 // Websockets class default events
 static DEFAULT_EVENTS: Object.<String, String>
 

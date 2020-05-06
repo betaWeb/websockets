@@ -88,25 +88,50 @@ class Websockets {
 	}
 
 	/**
+	 * @returns {Object.<String, Number>}
+	 */
+	static get CLOSE_STATUS() {
+		return {
+			'NORMAL_CLOSURE': 1000,
+			'GOING_AWAY': 1001,
+			'PROTOCOL_ERROR': 1002,
+			'UNSUPPORTED_DATA': 1003,
+			'STATUS_NO_RECEIVED': 1005,
+			'ABNORMAL_CLOSURE': 1006,
+			'INVALID_FRAME_PAYLOAD_DATA': 1007,
+			'POLICY_VIOLATION': 1008,
+			'MESSAGE_TOO_BIG': 1009,
+			'MISSING_EXTENSION': 1010,
+			'INTERNAL_ERROR': 1011,
+			'SERVICE_RESTART': 1012,
+			'TRY_AGAIN_LATER': 1013,
+			'BAD_GATEWAY': 1014,
+			'TLS_HANDSHAKE': 1015
+		}
+	}
+
+	/**
 	 * @returns {Object.<Number, String>}
 	 */
-	static get CLOSE_CODES() {
+	static get CLOSE_STATUS_MESSAGES() {
+		const status = Websockets.CLOSE_STATUS;
+
 		return {
-			1000: 'Normal closure',
-			1001: 'Going Away',
-			1002: 'Protocol Error',
-			1003: 'Unsupported Data',
-			1005: 'No Status Received',
-			1006: 'Abnormal Closure',
-			1007: 'Invalid frame payload data',
-			1008: 'Policy Violation',
-			1009: 'Message too big',
-			1010: 'Missing Extension',
-			1011: 'Internal Server Error',
-			1012: 'Service Restart',
-			1013: 'Try Again Later',
-			1014: 'Bad Gateway',
-			1015: 'TLS Handshake'
+			[status.NORMAL_CLOSURE]: 'Normal closure',
+			[status.GOING_AWAY]: 'Going Away',
+			[status.PROTOCOL_ERROR]: 'Protocol Error',
+			[status.UNSUPPORTED_DATA]: 'Unsupported Data',
+			[status.STATUS_NO_RECEIVED]: 'No Status Received',
+			[status.ABNORMAL_CLOSURE]: 'Abnormal Closure',
+			[status.INVALID_FRAME_PAYLOAD_DATA]: 'Invalid frame payload data',
+			[status.POLICY_VIOLATION]: 'Policy Violation',
+			[status.MESSAGE_TOO_BIG]: 'Message too big',
+			[status.MISSING_EXTENSION]: 'Missing Extension',
+			[status.INTERNAL_ERROR]: 'Internal Error',
+			[status.SERVICE_RESTART]: 'Service Restart',
+			[status.TRY_AGAIN_LATER]: 'Try Again Later',
+			[status.BAD_GATEWAY]: 'Bad Gateway',
+			[status.TLS_HANDSHAKE]: 'TLS Handshake'
 		}
 	}
 
@@ -289,8 +314,8 @@ class Websockets {
 					this.options.onopen(event)
 
 					this.client.onclose = event => {
-						const reason = Websockets.CLOSE_CODES[event.code]
-							? Websockets.CLOSE_CODES[event.code]
+						const reason = Websockets.CLOSE_STATUS_MESSAGES[event.code]
+							? Websockets.CLOSE_STATUS_MESSAGES[event.code]
 							: 'Unknown Reason'
 
 						this.options.onclose(event, reason)
