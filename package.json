@@ -1,6 +1,6 @@
 {
   "name": "@betaweb/websockets",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "keywords": [
     "websocket-client",
     "websocket",
@@ -20,7 +20,15 @@
     "test": "jest --watchAll --colors"
   },
   "author": "Cyprien GLEPIN <betaweb34@gmail.com>",
-  "license": "MIT",
+	"license": "MIT",
+	"bugs": {
+		"url": "https://github.com/betaWeb/websockets/issues"
+	},
+	"homepage": "https://github.com/betaWeb/websockets#readme",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/betaWeb/websockets.git"
+	},
   "devDependencies": {
     "@babel/core": "^7.9.0",
     "@babel/plugin-proposal-class-properties": "^7.8.3",
