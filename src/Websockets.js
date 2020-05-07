@@ -242,9 +242,9 @@ class Websockets {
 	 * @public
 	 */
 	get isClosed() {
-		return this.isInitialized && (
-			this.client.readyState === WebSocket.CLOSING ||
-			this.client.readyState === WebSocket.CLOSED
+		return (
+			!this.isInitialized || 
+			(this.client.readyState === WebSocket.CLOSING || this.client.readyState === WebSocket.CLOSED)
 		)
 	}
 
@@ -509,6 +509,7 @@ class Websockets {
 			this._send_retries = 0
 
 			this.client.close()
+			this.client = null
 			this._debug('Websockets successfully disconnected', 'disconnect')
 		}
 	}
@@ -522,7 +523,6 @@ class Websockets {
 	destroy() {
 		this._events = {}
 		this.disconnect()
-		this.client = null
 	}
 
 	/**

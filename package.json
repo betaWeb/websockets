@@ -1,6 +1,6 @@
 {
   "name": "@betaweb/websockets",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "keywords": [
     "websocket-client",
     "websocket",
@@ -16,7 +16,7 @@
     "dev": "ENV=development ./node_modules/.bin/webpack --config webpack.config.js",
     "build": "./node_modules/.bin/webpack --config webpack.config.js",
     "doc": "jsdoc -p -R README.md -a all -c jsdoc.conf.json",
-    "prod": "npm run build && npm run doc",
+    "prod": "npm run build && npm run doc && npm run test",
     "test": "jest --watchAll --colors"
   },
   "author": "Cyprien GLEPIN <betaweb34@gmail.com>",

@@ -1111,7 +1111,7 @@ var Websockets = /*#__PURE__*/function () {
   }, {
     key: "isClosed",
     get: function get() {
-      return this.isInitialized && (this.client.readyState === WebSocket.CLOSING || this.client.readyState === WebSocket.CLOSED);
+      return !this.isInitialized || this.client.readyState === WebSocket.CLOSING || this.client.readyState === WebSocket.CLOSED;
     }
     /**
      * @returns {WSEvent[]}
@@ -1569,6 +1569,7 @@ var Websockets = /*#__PURE__*/function () {
         this._conn_retries = 0;
         this._send_retries = 0;
         this.client.close();
+        this.client = null;
 
         this._debug('Websockets successfully disconnected', 'disconnect');
       }
@@ -1585,7 +1586,6 @@ var Websockets = /*#__PURE__*/function () {
     value: function destroy() {
       this._events = {};
       this.disconnect();
-      this.client = null;
     }
     /**
      * @param {String} type 
